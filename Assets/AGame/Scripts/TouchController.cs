@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class TouchController : MonoBehaviour
 {
-    public GridManager gridManager;
+    public Transform character;
     public Transform head;
     public Transform body;
-    private bool isDragging = false;
     public SpriteRenderer[] partsToColor;
+    public GridManager gridManager;
+    private bool isDragging = false;
+
+    void Start()
+    {
+        
+    }
 
     void Update()
     {
@@ -25,33 +31,22 @@ public class TouchController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            if (isDragging)
-            {
-                Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                Vector2Int gridPos = gridManager.WorldToGridPosition(mousePosition);
-                Tile targetTile = gridManager.GetTileAtPosition(gridPos);
-
-                if (targetTile != null && !targetTile.isOccupied)
-                {
-                    head.position = targetTile.transform.position;
-                    targetTile.isOccupied = true;
-                }
-
-                ChangeColor(Color.white);
-            }
             isDragging = false;
+            ChangeColor(Color.white);
         }
 
         if (isDragging)
         {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 snappedPosition = SnapToGrid(mousePosition);
-            head.position = snappedPosition;
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePosition.z = 0f;
 
-            Vector2 direction = head.position - body.position;
+            Vector3 snappedPosition = SnapToGrid(mousePosition);
+
+            Vector3 direction = (snappedPosition  -  transform.position).normalized;
+
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            body.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            character.rotation = Quaternion.Euler(0, 0, angle);
         }
     }
 
@@ -66,27 +61,12 @@ public class TouchController : MonoBehaviour
         return originalPosition;
     }
 
+
     public void ChangeColor(Color newColor)
     {
         foreach (SpriteRenderer part in partsToColor)
         {
             part.color = newColor;
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.name == "Player")
-        {
-            ChangeColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.name == "Player")
-        {
-            ChangeColor(Color.white);
         }
     }
 }
