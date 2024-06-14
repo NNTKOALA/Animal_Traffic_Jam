@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AnimController : MonoBehaviour
+public class Character : MonoBehaviour
 {
+    public int characterLength;
+
     // Start is called before the first frame update
     void Start()
     {

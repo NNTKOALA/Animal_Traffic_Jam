@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class TouchController : MonoBehaviour
 {
-    public Transform characterTransform;
-    public Collider2D characterCollider;
+    public GridManager gridManager;
     public Transform head;
     public Transform body;
     private bool isDragging = false;
@@ -26,8 +25,21 @@ public class TouchController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
+            if (isDragging)
+            {
+                Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector2Int gridPos = gridManager.WorldToGridPosition(mousePosition);
+                Tile targetTile = gridManager.GetTileAtPosition(gridPos);
+
+                if (targetTile != null && !targetTile.isOccupied)
+                {
+                    head.position = targetTile.transform.position;
+                    targetTile.isOccupied = true;
+                }
+
+                ChangeColor(Color.white);
+            }
             isDragging = false;
-            ChangeColor(Color.white);
         }
 
         if (isDragging)
@@ -40,17 +52,18 @@ public class TouchController : MonoBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
             body.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
-            characterCollider.transform.position = characterTransform.position;
         }
     }
 
     Vector2 SnapToGrid(Vector2 originalPosition)
     {
-        float gridSize = 1.0f;
-        float snappedX = Mathf.Round(originalPosition.x / gridSize) * gridSize;
-        float snappedY = Mathf.Round(originalPosition.y / gridSize) * gridSize;
-        return new Vector2(snappedX, snappedY);
+        Vector2Int gridPos = gridManager.WorldToGridPosition(originalPosition);
+        Tile tile = gridManager.GetTileAtPosition(gridPos);
+        if (tile != null)
+        {
+            return tile.transform.position;
+        }
+        return originalPosition;
     }
 
     public void ChangeColor(Color newColor)
@@ -58,6 +71,22 @@ public class TouchController : MonoBehaviour
         foreach (SpriteRenderer part in partsToColor)
         {
             part.color = newColor;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.name == "Player")
+        {
+            ChangeColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.name == "Player")
+        {
+            ChangeColor(Color.white);
         }
     }
 }
