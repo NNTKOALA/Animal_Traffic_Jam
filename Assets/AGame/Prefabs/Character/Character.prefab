@@ -123,7 +123,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.028388083, y: 0.5918367}
-  m_Size: {x: 0.7460302, y: 1.7302482}
+  m_Size: {x: 0.7460302, y: 1.7}
   m_Direction: 0
 --- !u!114 &3058406324869617659
 MonoBehaviour:
@@ -137,9 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a2b1234cb46e2c499f1eaf7e2fc178b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 3058406324869617657}
   head: {fileID: 5039667617424754100}
-  body: {fileID: 6786437438606935586}
   partsToColor:
   - {fileID: 1865750363137862450}
   - {fileID: 5394139729633444965}
@@ -668,11 +666,6 @@ Transform:
 --- !u!212 &5394139729633444965 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6965504948107036595, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
-  m_PrefabInstance: {fileID: 3058406325273412566}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &6786437438606935586 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8385668136597112308, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
   m_PrefabInstance: {fileID: 3058406325273412566}
   m_PrefabAsset: {fileID: 0}
 --- !u!212 &7362366385149866613 stripped
