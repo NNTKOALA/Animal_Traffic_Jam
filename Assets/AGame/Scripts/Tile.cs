@@ -8,16 +8,9 @@ public class Tile : MonoBehaviour
     public Vector2Int gridPosition;
     public bool isOccupied;
 
-    // Start is called before the first frame update
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void Initialize(Vector2Int gridPos)
@@ -28,17 +21,20 @@ public class Tile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.CompareTag("Player"))
         {
-            spriteRenderer.color = Color.black;
+            spriteRenderer.color = Color.gray;
+            isOccupied = true;
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.CompareTag("Player"))
         {
-            spriteRenderer.color  = Color.white;
+            spriteRenderer.color = Color.white;
+            isOccupied = false;
         }
     }
 }
+

@@ -5,20 +5,39 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     public Tile[] tiles;
+    public List<TouchController> touchControllers;
+    public float snapRange = 0.5f;
 
-    void Start()
+    private void Start()
     {
-        InitializeTiles();
+        foreach (TouchController script in touchControllers)
+        {
+            script.dargEndedDelegate = SnapObject;
+        }
+
+        foreach (Tile tile in tiles)
+        {
+            Vector2Int gridPos = WorldToGridPosition(tile.transform.position);
+            tile.Initialize(gridPos);
+        }
     }
 
-    void InitializeTiles()
+    public void SnapObject(Transform obj)
     {
         foreach (Tile tile in tiles)
         {
-            Vector3 worldPos = tile.transform.position;
-            Vector2Int gridPos = WorldToGridPosition(worldPos);
-            tile.Initialize(gridPos);
+            if (Vector2.Distance(tile.transform.position, obj.position) <= snapRange)
+            {
+                obj.position = tile.transform.position;
+            }
         }
+    }
+
+    public Vector2Int WorldToGridPosition(Vector2 worldPosition)
+    {
+        int x = Mathf.FloorToInt(worldPosition.x);
+        int y = Mathf.FloorToInt(worldPosition.y);
+        return new Vector2Int(x, y);
     }
 
     public Tile GetTileAtPosition(Vector2Int gridPos)
@@ -33,28 +52,18 @@ public class GridManager : MonoBehaviour
         return null;
     }
 
-    public Vector2Int WorldToGridPosition(Vector3 worldPos)
+    public bool IsTileOccupied(Vector2Int gridPos)
     {
-        float gridSize = .25f;
-        int x = Mathf.FloorToInt(worldPos.x / gridSize);
-        int y = Mathf.FloorToInt(worldPos.y / gridSize);
-        return new Vector2Int(x, y);
+        Tile tile = GetTileAtPosition(gridPos);
+        return tile != null && tile.isOccupied;
     }
 
-    public Tile GetNearestTile(Vector3 worldPos)
+    public void OccupyTile(Vector2Int gridPos, bool occupied)
     {
-        Tile nearestTile = null;
-        float minDistance = float.MaxValue;
-
-        foreach (Tile tile in tiles)
+        Tile tile = GetTileAtPosition(gridPos);
+        if (tile != null)
         {
-            float distance = Vector3.Distance(worldPos, tile.transform.position);
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                nearestTile = tile;
-            }
+            tile.isOccupied = occupied;
         }
-        return nearestTile;
     }
 }

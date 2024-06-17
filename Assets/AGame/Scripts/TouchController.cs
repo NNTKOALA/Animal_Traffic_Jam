@@ -1,22 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class TouchController : MonoBehaviour
 {
-    public Transform character;
-    public Transform head;
-    public Transform body;
     public SpriteRenderer[] partsToColor;
-    public GridManager gridManager;
+    public Transform head;
+    public delegate void DargEndedDelegate(Transform transform);
+    public DargEndedDelegate dargEndedDelegate;
+
     private bool isDragging = false;
+    private Transform m_transform;
 
     void Start()
     {
-        
+        m_transform = this.transform;
     }
 
     void Update()
+    {
+        CheckMouseInput();
+    }
+
+    public void CheckMouseInput()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -32,41 +39,45 @@ public class TouchController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             isDragging = false;
+            dargEndedDelegate(this.transform);
             ChangeColor(Color.white);
         }
 
         if (isDragging)
         {
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePosition.z = 0f;
-
-            Vector3 snappedPosition = SnapToGrid(mousePosition);
-
-            Vector3 direction = (snappedPosition  -  transform.position).normalized;
-
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-            character.rotation = Quaternion.Euler(0, 0, angle);
+            RotateCharacter();
         }
     }
 
-    Vector2 SnapToGrid(Vector2 originalPosition)
+    public void RotateCharacter()
     {
-        Vector2Int gridPos = gridManager.WorldToGridPosition(originalPosition);
-        Tile tile = gridManager.GetTileAtPosition(gridPos);
-        if (tile != null)
-        {
-            return tile.transform.position;
-        }
-        return originalPosition;
+        Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - m_transform.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+        m_transform.rotation = rotation;
     }
-
 
     public void ChangeColor(Color newColor)
     {
         foreach (SpriteRenderer part in partsToColor)
         {
             part.color = newColor;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            ChangeColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            ChangeColor(Color.white);
         }
     }
 }
