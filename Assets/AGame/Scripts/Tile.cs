@@ -1,22 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Tile : MonoBehaviour
 {
-    public Vector2Int gridPosition;
+    public Vector2 t_position;
     public SpriteRenderer spriteRenderer;
-    public bool isOccupied;
 
     void Start()
     {
+        t_position = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
-    }
-
-    public void Initialize(Vector2Int gridPos)
-    {
-        gridPosition = gridPos;
-        isOccupied = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -24,7 +19,6 @@ public class Tile : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             spriteRenderer.color = Color.gray;
-            isOccupied = true;
         }
     }
 
@@ -33,7 +27,6 @@ public class Tile : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             spriteRenderer.color = Color.white;
-            isOccupied = false;
         }
     }
 }
