@@ -7,82 +7,151 @@ using UnityEngine.TextCore.Text;
 
 public class TouchController : MonoBehaviour
 {
-    public Transform head;
+    public Transform headPosition;
+    public Transform bodyPosition;
     public SpriteRenderer[] partsToColor;
+    public static TouchController currentActivePlayer = null;
 
     private bool isDragging = false;
-    private Transform m_transform;
+    private bool isColliding = false;
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
 
-    void Start()
+    public void Start()
     {
-        m_transform = transform;
+        initialPosition = headPosition.transform.position;
+        initialRotation = bodyPosition.transform.rotation;
     }
 
-    void Update()
+    public void Update()
     {
-        CheckMouseInput();
+        HandleInput();
     }
 
-    public void CheckMouseInput()
+    public void HandleInput()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 mousePosition = Input.mousePosition;
+            GameObject clickedCharacter = GetCharacterUnderMouse(mousePosition);
 
-            if (Vector2.Distance(mousePosition, head.position) < 0.4f)
+            if (clickedCharacter != null && clickedCharacter.CompareTag("Player"))
             {
-                isDragging = true;
-                //Character.Instance.OnEscape();
-                ChangeColor(new Color(1f, 0.91f, 0.73f));
+                TouchController clickedController = clickedCharacter.GetComponent<TouchController>();
+
+                if (currentActivePlayer != null && currentActivePlayer != clickedController)
+                {
+                    currentActivePlayer.ChangeColor(Color.white);
+                    currentActivePlayer.StopDragging();
+                }
+
+                currentActivePlayer = clickedController;
+                currentActivePlayer.StartDragging();
             }
         }
-
-        if (Input.GetMouseButtonUp(0))
+        else if (Input.GetMouseButton(0))
         {
-            isDragging = false;
-            CheckTile();
-            ChangeColor(Color.white) ;
+            if (currentActivePlayer != null && currentActivePlayer.isDragging)
+            {
+                currentActivePlayer.UpdateCharPosition();
+            }
         }
-
-        if (isDragging && Input.GetMouseButton(0))
+        else if (Input.GetMouseButtonUp(0))
         {
-            DragCharacter();
-            //Debug.Log("Character is moving");
+            if (currentActivePlayer != null)
+            {
+                currentActivePlayer.StopDragging();
+            }
         }
     }
 
-    public void DragCharacter()
+    public GameObject GetCharacterUnderMouse(Vector2 mousePosition)
     {
-        Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - m_transform.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-        m_transform.rotation = rotation;
+        Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
+
+        if (hit.collider != null)
+        {
+            return hit.collider.gameObject;
+        }
+        return null;
+    }
+
+    public void StartDragging()
+    {
+        isDragging = true;
+        ChangeColor(new Color(1f, 0.91f, 0.73f));
+        initialPosition = headPosition.position;
+    }
+
+    public void UpdateCharPosition()
+    {
+        if (!isColliding)
+        {
+            Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - bodyPosition.position;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+            bodyPosition.rotation = rotation;
+            initialPosition = headPosition.position;
+        }
+    }
+
+    public void StopDragging()
+    {
+        isDragging = false;
+        ChangeColor(Color.white);
+        CheckTile();
     }
 
     public void CheckTile()
     {
-        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        LayerMask tileLayerMask = LayerMask.GetMask("Tile");
 
-        if (Vector2.Distance(mousePosition, head.position) < 0.4f && isDragging == false)
+        RaycastHit2D hit = Physics2D.Raycast(headPosition.position, Vector2.zero, Mathf.Infinity, tileLayerMask);
+
+        if (hit.collider != null && hit.collider.CompareTag("Tile"))
         {
-            LayerMask tileLayerMask = LayerMask.GetMask("Tile");
+            Vector3 targetPosition = hit.collider.transform.position;
+            Vector3 upVector = (targetPosition - transform.position).normalized;
 
-            RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, Mathf.Infinity, tileLayerMask);
-
-            if (hit.collider != null && hit.collider.CompareTag("Tile"))
-            {
-                Vector3 targetPosition = hit.collider.transform.position;
-                Vector3 upVector = (targetPosition - transform.position).normalized;
-
-                transform.up = upVector;
-            }
-            else
-            {
-                transform.up = Vector3.up;
-            }
+            transform.up = upVector;
+        }
+        else
+        {
+            MoveToNearestTile();
         }
     }
 
+    public void MoveToNearestTile()
+    {
+        Tile nearestTile = FindNearestAvailableTile();
+        if (nearestTile != null)
+        {
+            headPosition.position = nearestTile.transform.position;
+        }
+    }
+
+    public Tile FindNearestAvailableTile()
+    {
+        Tile[] tiles = FindObjectsOfType<Tile>();
+        Tile nearestTile = null;
+        float shortestDistance = Mathf.Infinity;
+
+        foreach (Tile tile in tiles)
+        {
+            if (!tile.isOccupied)
+            {
+                float distance = Vector3.Distance(bodyPosition.position, tile.transform.position);
+                if (distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    nearestTile = tile;
+                }
+            }
+        }
+
+        return nearestTile;
+    }
 
     public void ChangeColor(Color newColor)
     {
@@ -92,19 +161,21 @@ public class TouchController : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
             ChangeColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
+            isColliding = true;
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
             ChangeColor(Color.white);
+            isColliding = false;
         }
     }
 }
