@@ -19,17 +19,16 @@ public class Tile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
             spriteRenderer.color = Color.gray;
             isOccupied = true;
-            Debug.Log("Character name: " +  collision.name);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
             spriteRenderer.color = Color.white;
             isOccupied = false;
