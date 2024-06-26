@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 7953723001063450790}
   - component: {fileID: 7953723001063450791}
   - component: {fileID: 7953723001063450784}
+  - component: {fileID: 4862270681060053762}
   m_Layer: 7
   m_Name: Character 5
   m_TagString: Object
@@ -151,7 +152,6 @@ MonoBehaviour:
   headPosition: {fileID: 7558366924432224838}
   bodyPosition: {fileID: 7953723001063450789}
   point1Position: {fileID: 5696846517938986474}
-  point2Position: {fileID: 0}
   partsToColor:
   - {fileID: 6770197378260886573}
   - {fileID: 1066013038831307642}
@@ -161,6 +161,19 @@ MonoBehaviour:
   - {fileID: 2466997932591971690}
   moveSpeed: 5
   mapBoundaryY: 10
+--- !u!114 &4862270681060053762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7953723001063450785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aa800673de5b58438598a24edfc6708, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 2905861614443409910}
 --- !u!1001 &7953722999991749833
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -658,6 +671,11 @@ SpriteRenderer:
 --- !u!212 &2466997932591971690 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 5502771340145897891, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
+  m_PrefabInstance: {fileID: 7953722999991749833}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &2905861614443409910 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5058383866680278335, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
   m_PrefabInstance: {fileID: 7953722999991749833}
   m_PrefabAsset: {fileID: 0}
 --- !u!212 &2989202091150714395 stripped

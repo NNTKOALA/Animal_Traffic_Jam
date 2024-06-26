@@ -8,9 +8,9 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance { get; private set; }
 
-    public List<LevelManager> mainLevelPrefab;
+    public List<LevelPoint> mainLevelPrefab;
     public int currentLevel;
-    private LevelManager currentLevelInstance;
+    private LevelPoint currentLevelInstance;
     private bool isPlaying;
 
     private void Awake()
@@ -36,6 +36,12 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void StartNewGame()
+    {
+        isPlaying = true;
+        ResumeGame();
     }
 
     public void WinGame()

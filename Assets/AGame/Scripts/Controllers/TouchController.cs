@@ -8,6 +8,9 @@ using UnityEngine.TextCore.Text;
 
 public class TouchController : MonoBehaviour
 {
+    AudioManager audioManager;
+    AnimController animController;
+
     public Transform headPosition;
     public Transform bodyPosition;
     public Transform point1Position;
@@ -16,18 +19,21 @@ public class TouchController : MonoBehaviour
     public float moveSpeed = 5f;
     public float mapBoundaryY = 10f;
 
+    private Vector2 startMousePosition;
     private Collider2D charCollider;
     private bool isDragging = false;
     private bool isColliding = false;
 
-    public void Start() 
+
+    private void Awake()
     {
-        charCollider = GetComponent<Collider2D>();
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+        animController = GetComponent<AnimController>();
     }
 
-    public void Update()
+    public void Start()
     {
-        
+        charCollider = GetComponent<Collider2D>();
     }
 
     private void OnMouseDown()
@@ -74,7 +80,6 @@ public class TouchController : MonoBehaviour
         }
     }
 
-
     public GameObject GetCharacterUnderMouse(Vector2 mousePosition)
     {
         Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mousePosition);
@@ -91,6 +96,8 @@ public class TouchController : MonoBehaviour
     {
         isDragging = true;
         ChangeCharColor(new Color(1f, 0.91f, 0.73f));
+        animController.ChangeAnim("idle");
+        audioManager.PlayerSFX(audioManager.touchSound);
     }
 
     public void UpdateCharPosition()
@@ -101,6 +108,8 @@ public class TouchController : MonoBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
             bodyPosition.rotation = rotation;
+            //animController.ChangeAnim("move");
+            audioManager.PlayerSFX(audioManager.moveSound);
         }
     }
 
@@ -191,6 +200,8 @@ public class TouchController : MonoBehaviour
                     CheckTile();
                     Debug.Log("Hit: " + hit.collider.name + ", Tag: " + hit.collider.tag);
                     objectHit = true;
+                    animController.ChangeAnim("hit");
+                    audioManager.PlayerSFX(audioManager.blockSound);
                     break;
                 }
             }
@@ -235,6 +246,8 @@ public class TouchController : MonoBehaviour
         }
 
         Debug.Log("Character has moved outside the map.");
+        //animController.ChangeAnim("move");
+        audioManager.PlayerSFX(audioManager.escapeSound);
     }
 
     private void ChangeCharColor(Collider2D collider)
