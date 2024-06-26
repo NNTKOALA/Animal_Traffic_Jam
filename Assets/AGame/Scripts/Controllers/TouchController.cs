@@ -11,7 +11,6 @@ public class TouchController : MonoBehaviour
     public Transform headPosition;
     public Transform bodyPosition;
     public Transform point1Position;
-    public Transform point2Position;
     public SpriteRenderer[] partsToColor;
     public static TouchController currentActivePlayer = null;
     public float moveSpeed = 5f;
@@ -28,54 +27,53 @@ public class TouchController : MonoBehaviour
 
     public void Update()
     {
-        HandleInput();
+        
     }
 
-    void HandleInput()
+    private void OnMouseDown()
     {
-        if (Input.GetMouseButtonDown(0))
+        Vector2 mousePosition = Input.mousePosition;
+        GameObject clickedCharacter = GetCharacterUnderMouse(mousePosition);
+
+        if (clickedCharacter != null && clickedCharacter.CompareTag("Object"))
         {
-            Vector2 mousePosition = Input.mousePosition;
-            GameObject clickedCharacter = GetCharacterUnderMouse(mousePosition);
+            TouchController clickedController = clickedCharacter.GetComponent<TouchController>();
+            clickedCharacter.tag = "Player";
 
-            if (clickedCharacter != null && clickedCharacter.CompareTag("Object"))
+            if (currentActivePlayer != null && currentActivePlayer != clickedController)
             {
-                TouchController clickedController = clickedCharacter.GetComponent<TouchController>();
-                clickedCharacter.tag = "Player";
-
-                if (currentActivePlayer != null && currentActivePlayer != clickedController)
-                {
-                    currentActivePlayer.ChangeCharColor(Color.white);
-                    currentActivePlayer.StopDragging();
-                }
-
-                currentActivePlayer = clickedController;
-                currentActivePlayer.StartDragging();
-            }
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            if (currentActivePlayer != null && currentActivePlayer.isDragging)
-            {
-                currentActivePlayer.UpdateCharPosition();
-            }
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (currentActivePlayer != null)
-            {
+                currentActivePlayer.ChangeCharColor(Color.white);
                 currentActivePlayer.StopDragging();
-                if (!isColliding)
-                {
-                    currentActivePlayer.EscapingMovement();
-                }
-                currentActivePlayer.gameObject.tag = "Object";
-                currentActivePlayer = null;
             }
+            isColliding = false;
+            currentActivePlayer = clickedController;
+            currentActivePlayer.StartDragging();
         }
     }
+
+    private void OnMouseDrag()
+    {
+        if (currentActivePlayer != null && !isColliding)
+        {
+            currentActivePlayer.UpdateCharPosition();
+        }
+    }
+
+    private void OnMouseUp()
+    {
+        if (currentActivePlayer != null)
+        {
+            currentActivePlayer.StopDragging();
+            if (!isColliding)
+            {
+                currentActivePlayer.EscapingMovement();
+            }
+            currentActivePlayer.gameObject.tag = "Object";
+            currentActivePlayer = null;
+            isColliding = true;
+        }
+    }
+
 
     public GameObject GetCharacterUnderMouse(Vector2 mousePosition)
     {
@@ -173,32 +171,50 @@ public class TouchController : MonoBehaviour
     {
         LayerMask tileLayerMask = LayerMask.GetMask("Player");
 
-        float distanceBetweenPoints = Vector2.Distance(point1Position.position, point2Position.position);
+        Vector2 direction = (headPosition.position - bodyPosition.position);
 
-        Vector2 midPoint = (point1Position.position + point2Position.position) / 2;
+        DrawCircle(bodyPosition.position, 0.25f, Color.green);
 
-        RaycastHit2D hit = Physics2D.BoxCast(midPoint, new Vector2(distanceBetweenPoints, 0.1f), 0, Vector2.up, Mathf.Infinity, tileLayerMask);
+        Debug.DrawRay(bodyPosition.position, direction * Mathf.Infinity, Color.red, 1f);
 
-        if (hit.collider != null)
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(bodyPosition.position, 0.25f, direction, Mathf.Infinity, tileLayerMask);
+
+        bool objectHit = false;
+
+        if (hits.Length > 0)
         {
-            Debug.Log("Hit: " + hit.collider.name + ", Tag: " + hit.collider.tag);
-
-            if (hit.collider.CompareTag("Object"))
+            foreach (RaycastHit2D hit in hits)
             {
-                ChangeCharColor(hit.collider);
-                CheckTile();
-                return;
-            }
-            else
-            {
-                StartCoroutine(MoveCharacterOutsideMap());
+                if (hit.collider != null && hit.collider.CompareTag("Object"))
+                {
+                    ChangeCharColor(hit.collider);
+                    CheckTile();
+                    Debug.Log("Hit: " + hit.collider.name + ", Tag: " + hit.collider.tag);
+                    objectHit = true;
+                    break;
+                }
             }
         }
-        else
+
+        if (!objectHit)
         {
-            Debug.Log("No hit detected");
+            Debug.Log("No object hit detected");
             isColliding = false;
             StartCoroutine(MoveCharacterOutsideMap());
+        }
+    }
+
+    private void DrawCircle(Vector2 center, float radius, Color color)
+    {
+        int segments = 360;
+        float angle = 0f;
+        Vector3 lastPoint = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+        for (int i = 0; i <= segments; i++)
+        {
+            angle += 2 * Mathf.PI / segments;
+            Vector3 nextPoint = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+            Debug.DrawLine(lastPoint, nextPoint, color, 1f);
+            lastPoint = nextPoint;
         }
     }
 
