@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8911017690039952642}
   - component: {fileID: 8911017690039952653}
   - component: {fileID: 8911017690039952652}
-  - component: {fileID: 8911017690039952655}
+  - component: {fileID: 7286081648232259139}
   m_Layer: 8
   m_Name: Tile
   m_TagString: Tile
@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8911017690039952654}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 4.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.53333336, g: 0.8666667, b: 0.5137255, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -101,8 +101,8 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
---- !u!114 &8911017690039952655
+  m_Radius: 0.35
+--- !u!114 &7286081648232259139
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114,7 +114,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38532ee899d587f4398cc1c9d08f2c5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  t_position: {x: 0, y: 0}
   spriteRenderer: {fileID: 8911017690039952653}
-  customCoordinate: {x: 0, y: 0, z: 0}
+  defaultColor: {r: 0.53333336, g: 0.8666667, b: 0.5137255, a: 1}
+  occupiedColor: {r: 0.25490198, g: 0.38039216, b: 0.2509804, a: 1}
+  hitColor: {r: 0.9529412, g: 0.5019608, b: 0.5019608, a: 1}
   isOccupied: 0

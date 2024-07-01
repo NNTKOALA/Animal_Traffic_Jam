@@ -6,32 +6,26 @@ using UnityEngine.UIElements;
 
 public class Tile : MonoBehaviour
 {
-    public Vector2 t_position;
     public SpriteRenderer spriteRenderer;
-    public Vector3 customCoordinate;
+    public Color defaultColor = new Color(136 / 255f, 221 / 255f, 131 / 255f, 1f);
+    public Color occupiedColor = new Color(65 / 255f, 97 / 255f, 64 / 255f, 1f);
+    public Color hitColor = new Color(243f / 255f, 128f / 255f, 128f / 255f);
+
     public bool isOccupied = false;
 
-    void Start()
+    private void Start()
     {
-        t_position = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
-            spriteRenderer.color = Color.gray;
-            isOccupied = true;
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player") || collision.CompareTag("Object"))
-        {
-            spriteRenderer.color = Color.gray;
-            isOccupied = true;
+            if (!isOccupied)
+            {
+                spriteRenderer.color = occupiedColor;
+                isOccupied = true;
+            }
         }
     }
 
@@ -39,7 +33,7 @@ public class Tile : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
-            spriteRenderer.color = Color.white;
+            spriteRenderer.color = defaultColor;
             isOccupied = false;
         }
     }

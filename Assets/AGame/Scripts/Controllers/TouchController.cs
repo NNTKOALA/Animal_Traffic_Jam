@@ -1,82 +1,69 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
-using Unity.PlasticSCM.Editor.WebApi;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class TouchController : MonoBehaviour
 {
-    AudioManager audioManager;
     AnimController animController;
 
     public Transform headPosition;
     public Transform bodyPosition;
-    public Transform point1Position;
     public SpriteRenderer[] partsToColor;
     public static TouchController currentActivePlayer = null;
     public float moveSpeed = 5f;
+    public float raycastDistance = 0.5f;
     public float mapBoundaryY = 10f;
 
-    private Vector2 startMousePosition;
     private Collider2D charCollider;
     private bool isDragging = false;
     private bool isColliding = false;
 
-
-    private void Awake()
+    private void Start()
     {
-        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
         animController = GetComponent<AnimController>();
-    }
-
-    public void Start()
-    {
         charCollider = GetComponent<Collider2D>();
     }
 
     private void OnMouseDown()
     {
-        Vector2 mousePosition = Input.mousePosition;
-        GameObject clickedCharacter = GetCharacterUnderMouse(mousePosition);
+        GameObject clickedCharacter = GetCharacterUnderMouse(Input.mousePosition);
 
         if (clickedCharacter != null && clickedCharacter.CompareTag("Object"))
         {
             TouchController clickedController = clickedCharacter.GetComponent<TouchController>();
             clickedCharacter.tag = "Player";
 
-            if (currentActivePlayer != null && currentActivePlayer != clickedController)
+            if (TouchController.currentActivePlayer != null && TouchController.currentActivePlayer != clickedController)
             {
-                currentActivePlayer.ChangeCharColor(Color.white);
-                currentActivePlayer.StopDragging();
+                TouchController.currentActivePlayer.ChangeCharColor(Color.white);
+                TouchController.currentActivePlayer.StopDragging();
             }
-            isColliding = false;
-            currentActivePlayer = clickedController;
-            currentActivePlayer.StartDragging();
+            TouchController.currentActivePlayer = clickedController;
+            TouchController.currentActivePlayer.StartDragging();
         }
     }
 
     private void OnMouseDrag()
     {
-        if (currentActivePlayer != null && !isColliding)
+        if (isDragging && TouchController.currentActivePlayer != null)
         {
-            currentActivePlayer.UpdateCharPosition();
+            TouchController.currentActivePlayer.UpdateCharPosition();
         }
     }
 
     private void OnMouseUp()
     {
-        if (currentActivePlayer != null)
+        if (TouchController.currentActivePlayer != null)
         {
-            currentActivePlayer.StopDragging();
+            TouchController.currentActivePlayer.StopDragging();
             if (!isColliding)
             {
-                currentActivePlayer.EscapingMovement();
+                TouchController.currentActivePlayer.EscapingMovement();
             }
-            currentActivePlayer.gameObject.tag = "Object";
-            currentActivePlayer = null;
-            isColliding = true;
+            TouchController.currentActivePlayer.gameObject.tag = "Object";
+            TouchController.currentActivePlayer = null;
         }
     }
 
@@ -97,7 +84,7 @@ public class TouchController : MonoBehaviour
         isDragging = true;
         ChangeCharColor(new Color(1f, 0.91f, 0.73f));
         animController.ChangeAnim("idle");
-        audioManager.PlayerSFX(audioManager.touchSound);
+        AudioManager.Instance.PlaySFX("Touch");
     }
 
     public void UpdateCharPosition()
@@ -108,8 +95,8 @@ public class TouchController : MonoBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
             bodyPosition.rotation = rotation;
-            //animController.ChangeAnim("move");
-            audioManager.PlayerSFX(audioManager.moveSound);
+            animController.ChangeAnim("move");
+            AudioManager.Instance.PlaySFX("Move");
         }
     }
 
@@ -117,6 +104,7 @@ public class TouchController : MonoBehaviour
     {
         isDragging = false;
         ChangeCharColor(Color.white);
+        animController.ChangeAnim("idle");
         CheckTile();
     }
 
@@ -139,8 +127,8 @@ public class TouchController : MonoBehaviour
                 transform.up = upVector;
                 return;
             }
+            MoveToNearestTile();
         }
-        MoveToNearestTile();
     }
 
     public void MoveToNearestTile()
@@ -178,15 +166,8 @@ public class TouchController : MonoBehaviour
 
     public void EscapingMovement()
     {
-        LayerMask tileLayerMask = LayerMask.GetMask("Player");
-
         Vector2 direction = (headPosition.position - bodyPosition.position);
-
-        DrawCircle(bodyPosition.position, 0.25f, Color.green);
-
-        Debug.DrawRay(bodyPosition.position, direction * Mathf.Infinity, Color.red, 1f);
-
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(bodyPosition.position, 0.25f, direction, Mathf.Infinity, tileLayerMask);
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(bodyPosition.position, 0.25f, direction, Mathf.Infinity, LayerMask.GetMask("Player"));
 
         bool objectHit = false;
 
@@ -200,8 +181,9 @@ public class TouchController : MonoBehaviour
                     CheckTile();
                     Debug.Log("Hit: " + hit.collider.name + ", Tag: " + hit.collider.tag);
                     objectHit = true;
+                    isColliding = true;
                     animController.ChangeAnim("hit");
-                    audioManager.PlayerSFX(audioManager.blockSound);
+                    AudioManager.Instance.PlaySFX("Hit");
                     break;
                 }
             }
@@ -211,21 +193,10 @@ public class TouchController : MonoBehaviour
         {
             Debug.Log("No object hit detected");
             isColliding = false;
+            animController.ChangeAnim("idle");
             StartCoroutine(MoveCharacterOutsideMap());
-        }
-    }
-
-    private void DrawCircle(Vector2 center, float radius, Color color)
-    {
-        int segments = 360;
-        float angle = 0f;
-        Vector3 lastPoint = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
-        for (int i = 0; i <= segments; i++)
-        {
-            angle += 2 * Mathf.PI / segments;
-            Vector3 nextPoint = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
-            Debug.DrawLine(lastPoint, nextPoint, color, 1f);
-            lastPoint = nextPoint;
+            Destroy(gameObject, 2f);
+            GameManager.Instance.DecreaseObjectCount();
         }
     }
 
@@ -246,8 +217,8 @@ public class TouchController : MonoBehaviour
         }
 
         Debug.Log("Character has moved outside the map.");
-        //animController.ChangeAnim("move");
-        audioManager.PlayerSFX(audioManager.escapeSound);
+        animController.ChangeAnim("move");
+        AudioManager.Instance.PlaySFX("Move");
     }
 
     private void ChangeCharColor(Collider2D collider)
@@ -285,7 +256,6 @@ public class TouchController : MonoBehaviour
         {
             ChangeCharColor(Color.white);
             isColliding = false;
-            CheckTile();
         }
     }
 }
