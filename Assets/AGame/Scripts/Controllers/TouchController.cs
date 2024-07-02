@@ -41,35 +41,35 @@ public class TouchController : MonoBehaviour
             TouchController clickedController = clickedCharacter.GetComponent<TouchController>();
             clickedCharacter.tag = "Player";
 
-            if (TouchController.currentActivePlayer == null && TouchController.currentActivePlayer == clickedController)
+            if (currentActivePlayer == null && currentActivePlayer == clickedController)
             {
-                TouchController.currentActivePlayer.ChangeCharColor(Color.white);
-                TouchController.currentActivePlayer.DropObject();
+                currentActivePlayer.ChangeCharColor(Color.white);
+                currentActivePlayer.DropObject();
             }
-            TouchController.currentActivePlayer = clickedController;
-            TouchController.currentActivePlayer.TouchObject();
+            currentActivePlayer = clickedController;
+            currentActivePlayer.TouchObject();
         }
     }
 
     private void OnMouseDrag()
     {
-        if (TouchController.currentActivePlayer != null)
+        if (!isDragging && currentActivePlayer != null)
         {
-            TouchController.currentActivePlayer.DragObject();
+            currentActivePlayer.DragObject();
         }
     }
 
     private void OnMouseUp()
     {
-        if (TouchController.currentActivePlayer != null)
+        if (currentActivePlayer != null)
         {
-            TouchController.currentActivePlayer.DropObject();
+            currentActivePlayer.DropObject();
             if (!isColliding)
             {
-                TouchController.currentActivePlayer.EscapingMovement();
+                currentActivePlayer.EscapingMovement();
             }
-            TouchController.currentActivePlayer.gameObject.tag = "Object";
-            TouchController.currentActivePlayer = null;
+            currentActivePlayer.gameObject.tag = "Object";
+            currentActivePlayer = null;
         }
     }
 
@@ -87,7 +87,6 @@ public class TouchController : MonoBehaviour
 
     public void TouchObject()
     {
-        isDragging = true;
         ChangeCharColor(new Color(1f, 0.91f, 0.73f));
         animController.ChangeAnim("idle");
         AudioManager.Instance.PlaySFX("Touch");
@@ -95,13 +94,16 @@ public class TouchController : MonoBehaviour
 
     public void DragObject()
     {
-        Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - bodyPosition.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-        bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, rotation, 2f);
+        if (isColliding)
+        {
+            Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - bodyPosition.position;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+            bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, rotation, 2f);
 
-        animController.ChangeAnim("move");
-        AudioManager.Instance.PlaySFX("Move");
+            animController.ChangeAnim("move");
+            AudioManager.Instance.PlaySFX("Move");
+        }
     }
 
     public void DropObject()
@@ -247,6 +249,7 @@ public class TouchController : MonoBehaviour
         if (collision.gameObject.CompareTag("Object"))
         {
             ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
+            isColliding = true;
         }
     }
 
@@ -255,6 +258,7 @@ public class TouchController : MonoBehaviour
         if (collision.gameObject.CompareTag("Object"))
         {
             ChangeCharColor(Color.white);
+            isColliding = false;
         }
     }
 }
