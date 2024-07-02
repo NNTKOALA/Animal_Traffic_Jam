@@ -158,21 +158,36 @@ public class TouchController : MonoBehaviour
         Tile nearestTile = null;
         float shortestDistance = Mathf.Infinity;
 
+        float distanceBetweenHeadAndBody = Vector3.Distance(headPosition.position, bodyPosition.position);
+
         foreach (Tile tile in tiles)
         {
             if (!tile.isOccupied)
             {
-                float distance = Vector3.Distance(headPosition.position, tile.transform.position);
-                if (distance < shortestDistance)
+                float distanceToBody = Vector3.Distance(bodyPosition.position, tile.transform.position);
+
+                if ( distanceToBody <= distanceBetweenHeadAndBody)
                 {
-                    shortestDistance = distance;
-                    nearestTile = tile;
+                    float combinedDistance =  distanceToBody;
+                    if (combinedDistance < shortestDistance)
+                    {
+                        shortestDistance = combinedDistance;
+                        nearestTile = tile;
+                    }
                 }
             }
         }
 
         return nearestTile;
     }
+
+    private void UpdateHeadAndBodyPositions()
+    {
+        Vector3 direction = (bodyPosition.position - headPosition.position).normalized;
+        float distance = Vector3.Distance(headPosition.position, bodyPosition.position);
+        bodyPosition.position = headPosition.position + direction * distance;
+    }
+
 
     public void EscapingMovement()
     {
