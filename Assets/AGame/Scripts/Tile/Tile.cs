@@ -21,11 +21,8 @@ public class Tile : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
-            if (!isOccupied)
-            {
-                spriteRenderer.color = occupiedColor;
-                isOccupied = true;
-            }
+            spriteRenderer.color = occupiedColor;
+            isOccupied = true;
         }
     }
 

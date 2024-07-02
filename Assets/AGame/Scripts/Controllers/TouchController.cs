@@ -7,7 +7,6 @@ using UnityEngine;
 public class TouchController : MonoBehaviour
 {
     AnimController animController;
-
     public Transform headPosition;
     public Transform bodyPosition;
     public SpriteRenderer[] partsToColor;
@@ -16,6 +15,8 @@ public class TouchController : MonoBehaviour
     public float raycastDistance = 0.5f;
     public float mapBoundaryY = 10f;
 
+    private Vector2 initialMousePos;
+    private Vector2 currentMousePos;
     private Collider2D charCollider;
     private bool isDragging = false;
     private bool isColliding = false;
@@ -28,6 +29,8 @@ public class TouchController : MonoBehaviour
 
     private void OnMouseDown()
     {
+        initialMousePos = Input.mousePosition;
+
         GameObject clickedCharacter = GetCharacterUnderMouse(Input.mousePosition);
 
         if (clickedCharacter != null && clickedCharacter.CompareTag("Object"))
@@ -35,21 +38,22 @@ public class TouchController : MonoBehaviour
             TouchController clickedController = clickedCharacter.GetComponent<TouchController>();
             clickedCharacter.tag = "Player";
 
-            if (TouchController.currentActivePlayer != null && TouchController.currentActivePlayer != clickedController)
+            if (TouchController.currentActivePlayer == null && TouchController.currentActivePlayer == clickedController)
             {
                 TouchController.currentActivePlayer.ChangeCharColor(Color.white);
                 TouchController.currentActivePlayer.StopDragging();
             }
             TouchController.currentActivePlayer = clickedController;
             TouchController.currentActivePlayer.StartDragging();
+            isColliding = true;
         }
     }
 
     private void OnMouseDrag()
     {
-        if (isDragging && TouchController.currentActivePlayer != null)
+        if (TouchController.currentActivePlayer != null)
         {
-            TouchController.currentActivePlayer.UpdateCharPosition();
+            TouchController.currentActivePlayer.UpdateCharRotation();
         }
     }
 
@@ -64,6 +68,7 @@ public class TouchController : MonoBehaviour
             }
             TouchController.currentActivePlayer.gameObject.tag = "Object";
             TouchController.currentActivePlayer = null;
+            isColliding = false;
         }
     }
 
@@ -87,14 +92,23 @@ public class TouchController : MonoBehaviour
         AudioManager.Instance.PlaySFX("Touch");
     }
 
-    public void UpdateCharPosition()
+    public void UpdateCharRotation()
     {
+        Vector2 startMouse = Camera.main.ScreenToWorldPoint(initialMousePos);
+        currentMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 direction = currentMousePos - startMouse;
+
+        if (direction.sqrMagnitude > 0)
+        {
+            isColliding = false;
+        }
+
         if (!isColliding)
         {
-            Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - bodyPosition.position;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
             bodyPosition.rotation = rotation;
+
             animController.ChangeAnim("move");
             AudioManager.Instance.PlaySFX("Move");
         }
@@ -181,7 +195,6 @@ public class TouchController : MonoBehaviour
                     CheckTile();
                     Debug.Log("Hit: " + hit.collider.name + ", Tag: " + hit.collider.tag);
                     objectHit = true;
-                    isColliding = true;
                     animController.ChangeAnim("hit");
                     AudioManager.Instance.PlaySFX("Hit");
                     break;
