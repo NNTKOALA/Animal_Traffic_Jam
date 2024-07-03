@@ -12,17 +12,28 @@ public class Tile : MonoBehaviour
     public Color hitColor = new Color(243f / 255f, 128f / 255f, 128f / 255f);
 
     public bool isOccupied = false;
+    public GameObject _char = null;
 
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
-            spriteRenderer.color = occupiedColor;
-            isOccupied = true;
+            if (!isOccupied)
+            {
+                spriteRenderer.color = occupiedColor;
+                isOccupied = true;
+                _char = collision.gameObject;
+            }
+            else if (_char != collision.gameObject)
+            {
+                spriteRenderer.color = hitColor;
+                isOccupied = true;
+            }
         }
     }
 
@@ -30,8 +41,18 @@ public class Tile : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
-            spriteRenderer.color = defaultColor;
-            isOccupied = false;
+            if (isOccupied && _char == collision.gameObject)
+            {
+                spriteRenderer.color = defaultColor;
+                isOccupied = false;
+                _char = null;
+            }
+            else
+            {
+                spriteRenderer.color = occupiedColor;
+                isOccupied = true;
+                _char = collision.gameObject;
+            }
         }
     }
 }
