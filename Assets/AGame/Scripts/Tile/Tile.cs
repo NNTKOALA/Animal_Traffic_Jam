@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 
 public class Tile : MonoBehaviour
 {
+    public Vector2 tilePosition;
     public SpriteRenderer spriteRenderer;
     public Color defaultColor = new Color(136 / 255f, 221 / 255f, 131 / 255f, 1f);
     public Color occupiedColor = new Color(65 / 255f, 97 / 255f, 64 / 255f, 1f);
@@ -16,6 +17,7 @@ public class Tile : MonoBehaviour
 
     private void Start()
     {
+        tilePosition = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
