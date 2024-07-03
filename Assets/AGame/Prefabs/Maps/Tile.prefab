@@ -101,7 +101,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.35
+  m_Radius: 0.48
 --- !u!114 &7286081648232259139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,3 +119,4 @@ MonoBehaviour:
   occupiedColor: {r: 0.25490198, g: 0.38039216, b: 0.2509804, a: 1}
   hitColor: {r: 0.9529412, g: 0.5019608, b: 0.5019608, a: 1}
   isOccupied: 0
+  _char: {fileID: 0}

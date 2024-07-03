@@ -21,7 +21,6 @@ public class TouchController : MonoBehaviour
     public Tile currentBodyTile = null;
     public Tile currentHeadTile = null;
     public Vector2 direction;
-
     private Collider2D charCollider;
     private Vector2 initialMousePos;
     private Vector2 currentMousePos;
@@ -65,7 +64,7 @@ public class TouchController : MonoBehaviour
             if (distance > 3f)
             {
                 DragObject();
-                UpdateHeadAndBodyPositions();
+                //UpdateHeadAndBodyPositions();
             }
         }
     }
@@ -77,7 +76,7 @@ public class TouchController : MonoBehaviour
             currentActivePlayer.DropObject();
             if (!isColliding)
             {
-                currentActivePlayer.EscapingMovement();
+                SetPostionToSaveTile();
             }
             else
             {
@@ -138,15 +137,29 @@ public class TouchController : MonoBehaviour
         }
     }
 
+    public void SetPostionToSaveTile()
+    {
+        if (currentHeadTile != null)
+        {
+            Debug.Log($"Set head position : {currentHeadTile.name}");
+            headPosition = currentHeadTile.transform;
+            Vector3 upVector = (currentHeadTile.transform.position - transform.position).normalized;
+            transform.up = upVector;
+            //EscapingMovement();
+        }
+    }
+
 
     private void UpdateHeadAndBodyPositions()
     {
+        Debug.Log("Update Character position");
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(headPosition.position, raycastDistance);
 
         foreach (var hitCollider in hitColliders)
         {
             if (hitCollider.CompareTag("Tile"))
             {
+                Debug.Log($"<color=red>Tile : {hitCollider.name}</color>");
                 Tile tile = hitCollider.GetComponent<Tile>();
                 if (tile != null)
                 {
@@ -159,8 +172,25 @@ public class TouchController : MonoBehaviour
 
     public void EscapingMovement()
     {
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(bodyPosition.position, 0.25f, direction, Mathf.Infinity, LayerMask.GetMask("Player"));
+        RaycastHit2D hit = Physics2D.Raycast(bodyPosition.position, bodyPosition.up.normalized);
+        if (hit.collider.CompareTag("Object"))
+        {
+            if (hit.collider.CompareTag("Object"))
+            {
+                Debug.Log($"<color=yellow> Raycast to {hit.collider.name}</color>");
+                //Set head positions
+                ResetPositionToSavedTile();
+            }
+            else
+            {
+                //No Character block -> move to out area
+                StartCoroutine(MoveCharacterOutsideMap());
+                Destroy(gameObject, 2f);
+                GameManager.Instance.DecreaseObjectCount();
+            }
 
+        }
+        /*RaycastHit2D[] hits = Physics2D.CircleCastAll(bodyPosition.position, 0.25f, direction, Mathf.Infinity, LayerMask.GetMask("Player"));
         bool objectHit = false;
 
         if (hits.Length > 0)
@@ -186,7 +216,7 @@ public class TouchController : MonoBehaviour
             StartCoroutine(MoveCharacterOutsideMap());
             Destroy(gameObject, 2f);
             GameManager.Instance.DecreaseObjectCount();
-        }
+        }*/
     }
 
     private IEnumerator MoveCharacterOutsideMap()
@@ -200,7 +230,8 @@ public class TouchController : MonoBehaviour
 
         while (bodyPosition.position.y < mapBoundaryY)
         {
-            bodyPosition.position += (Vector3)direction * moveSpeed * Time.deltaTime;
+            //bodyPosition.position += (Vector3)direction * moveSpeed * Time.deltaTime;
+            bodyPosition.position += bodyPosition.up * moveSpeed * Time.deltaTime;
             yield return null;
         }
 
@@ -233,6 +264,7 @@ public class TouchController : MonoBehaviour
     {
         if (collision.CompareTag("Tile"))
         {
+            Debug.Log($"Trigger Tile : {collision.name}");
             Tile tile = collision.GetComponent<Tile>();
             if (tile != null)
             {
@@ -240,7 +272,7 @@ public class TouchController : MonoBehaviour
                 {
                     currentBodyTile = tile;
                 }
-                else if (Vector3.Distance(headPosition.position, tile.transform.position) < raycastDistance)
+                if (Vector3.Distance(headPosition.position, tile.transform.position) < raycastDistance)
                 {
                     currentHeadTile = tile;
                 }
