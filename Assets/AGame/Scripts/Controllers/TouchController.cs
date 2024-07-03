@@ -20,6 +20,7 @@ public class TouchController : MonoBehaviour
     public bool isColliding = false;
     public Tile currentBodyTile = null;
     public Tile currentHeadTile = null;
+    public Vector2 direction;
 
     private Collider2D charCollider;
     private Vector2 initialMousePos;
@@ -30,6 +31,7 @@ public class TouchController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animController = GetComponent<AnimController>();
         charCollider = GetComponent<Collider2D>();
+        direction = (headPosition.position - bodyPosition.position).normalized;
     }
 
     private void OnMouseDown()
@@ -157,7 +159,6 @@ public class TouchController : MonoBehaviour
 
     public void EscapingMovement()
     {
-        Vector2 direction = (headPosition.position - bodyPosition.position);
         RaycastHit2D[] hits = Physics2D.CircleCastAll(bodyPosition.position, 0.25f, direction, Mathf.Infinity, LayerMask.GetMask("Player"));
 
         bool objectHit = false;
@@ -190,7 +191,6 @@ public class TouchController : MonoBehaviour
 
     private IEnumerator MoveCharacterOutsideMap()
     {
-        Vector2 direction = (headPosition.position - bodyPosition.position).normalized;
         Debug.Log("Starting movement outside map.");
 
         if (charCollider != null)
