@@ -20,11 +20,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    [SerializeField] GameObject mainMenuUI;
+    [SerializeField] MainMenuUI mainMenuUI;
     [SerializeField] GameObject inGameUI;
     [SerializeField] GameObject winUI;
-    [SerializeField] GameObject loadingGameUI;
+    [SerializeField] LoadingUI loadingGameUI;
     [SerializeField] Button nextLevelBtn;
+    [SerializeField] Button startBtn;
 
     [SerializeField] ParticleSystem firework1;
     [SerializeField] ParticleSystem firework2;
@@ -32,19 +33,40 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        LoadingGameSceneCoroutine(3f);
+        ButtonClicked();
+        LoadingGameSceneCoroutine(4f);
         firework1.Stop();
         firework2.Stop();
-        mainMenuUI.SetActive(true);
+        mainMenuUI.gameObject.SetActive(true);
         nextLevelBtn.gameObject.SetActive(false);
+    }
+
+    private void ButtonClicked()
+    {
+        startBtn.onClick.AddListener(() =>
+        {
+            mainMenuUI.gameObject.SetActive(false);
+            StartCoroutine(DelayStartGame());
+        });
+    }
+
+    IEnumerator DelayStartGame()
+    {
+        yield return new WaitForSeconds(4f);
+        GameManager.Instance.SpawnLevelById(0);
     }
 
     public void DeactiveAll()
     {
-        mainMenuUI.SetActive(false);
+        mainMenuUI.gameObject.SetActive(false);
         inGameUI.SetActive(false);
         winUI.SetActive(false);
-        loadingGameUI.SetActive(false);
+        loadingGameUI.gameObject.SetActive(false);
+    }
+
+    public void DeActiveInGameUI()
+    {
+        inGameUI.SetActive(false);
     }
 
     public void SwitchTo(GameObject ui)
@@ -56,13 +78,13 @@ public class UIManager : MonoBehaviour
     public void SwitchToMainMenuUI()
     {
         DeactiveAll();
-        mainMenuUI.SetActive(true);
+        mainMenuUI.gameObject.SetActive(true);
     }
 
     public void SwitchToInGameUI()
     {
         SwitchTo(inGameUI);
-        mainMenuUI.SetActive(false);
+        mainMenuUI.gameObject.SetActive(false);
     }
 
     public void SwitchToWinUI()
@@ -82,11 +104,10 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator LoadingRoutine(float delay)
     {
-        loadingGameUI.SetActive(true);
-
+        loadingGameUI.gameObject.SetActive(true);
+        loadingGameUI.ActiveLoading();
         yield return new WaitForSeconds(delay);
-
-        loadingGameUI.SetActive(false);
+        loadingGameUI.gameObject.SetActive(false);
     }
 
     public void ActiveButton()
