@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1105024990038250768}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.6, z: 0}
+  m_LocalPosition: {x: 0, y: 4.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -185,7 +185,8 @@ MonoBehaviour:
   mapBoundaryY: 10
   isDragging: 0
   isColliding: 0
-  originalHeadPosition: {x: 0, y: 0, z: 0}
+  currentHeadTile: {fileID: 0}
+  currentBodyTile: {fileID: 0}
 --- !u!114 &4862270681060053762
 MonoBehaviour:
   m_ObjectHideFlags: 0

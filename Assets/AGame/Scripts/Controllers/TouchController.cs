@@ -133,7 +133,7 @@ public class TouchController : MonoBehaviour
         if (hit.collider != null && hit.collider.CompareTag("Tile"))
         {
             Tile tile = hit.collider.GetComponent<Tile>();
-            if (tile != null && !tile.isOccupied && !isColliding)
+            if (tile != null && tile.isOccupied == false)
             {
                 Vector3 targetPosition = hit.collider.transform.position;
                 Vector3 upVector = (targetPosition - transform.position).normalized;
@@ -158,7 +158,7 @@ public class TouchController : MonoBehaviour
         {
             Tile tile = hitCollider.collider.GetComponent<Tile>();
 
-            if (tile != null && tile.isOccupied == false)
+            if (tile != null)
             {
                 currentHeadTile = tile;
             }
@@ -247,11 +247,11 @@ public class TouchController : MonoBehaviour
             Tile tile = collision.GetComponent<Tile>();
             if (tile != null && !tile.isOccupied)
             {
-                if (Vector3.Distance(bodyPosition.position, tile.transform.position) < raycastDistance)
+                if (Vector3.Distance(bodyPosition.position, tile.transform.position) < 0.5f)
                 {
                     currentBodyTile = tile;
                 }
-                if (Vector3.Distance(headPosition.position, tile.transform.position) < raycastDistance)
+                if (Vector3.Distance(headPosition.position, tile.transform.position) < 0.5f)
                 {
                     currentHeadTile = tile;
                 }
