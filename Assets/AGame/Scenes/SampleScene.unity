@@ -508,12 +508,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3913132fbd12c27428247b32666a205b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 519420031}
   mainLevelPrefab:
   - {fileID: 3330447277728278186, guid: 7c9074d5e9f389d4e8104d822bb33dcb, type: 3}
   - {fileID: -6254699616392982046, guid: 7bd1a78145ed16d46b0a0ec2b7350385, type: 3}
   - {fileID: -4956689550554055913, guid: da6960806bf286f4eb406457a8a90658, type: 3}
   - {fileID: 6849898927664397676, guid: 16771972ffdcdaa489afb2bbb2cab2d0, type: 3}
+  - {fileID: 7584567564215398029, guid: 74849ccd3ceac334598e89bad0383c12, type: 3}
+  - {fileID: 4976659140395650302, guid: cec802b01edf60b43ae76ff664a85bcf, type: 3}
+  - {fileID: 434809019262589325, guid: 25caca08b6c15dc4aab21e8378ba8416, type: 3}
+  - {fileID: 8553598578882122739, guid: 822da4d597bdbd243a6dc6c761d2718a, type: 3}
+  - {fileID: 3085554542756090908, guid: ba13856d145793e4db9bb6361d397a5c, type: 3}
+  - {fileID: 7610858839983004438, guid: c42a9bc141963e248be638c0b27630d3, type: 3}
+  - {fileID: 3590989460651358528, guid: be9051d6d3b54a7479e36fbc1e342916, type: 3}
+  - {fileID: 694976683362022881, guid: a2ee470679680794c9bc1436b62f169c, type: 3}
+  - {fileID: 2480132175838914466, guid: 18eb4e03355ed8147a0698cbaa5b0f90, type: 3}
+  - {fileID: -179918152640061658, guid: c4b161754d5a596499b9ffdec9876cbf, type: 3}
+  - {fileID: 7262064318103438910, guid: 302aec9b8b603ad46a44b1796d2b6e92, type: 3}
+  - {fileID: 5171395548489760421, guid: 2dfb439f65309674baf9330ad931257f, type: 3}
+  - {fileID: 2841553209468183804, guid: 50f592f02a3b77b4e9df38c0ccd07e63, type: 3}
+  - {fileID: 5452414514715411631, guid: 03df1a1a68fee2d4ba2c7be12bbd133a, type: 3}
+  - {fileID: 78361521030498473, guid: 603a7de507957414db9ed22f4e1982ea, type: 3}
+  - {fileID: 6762827035227650013, guid: b238cd59b51aba1479077cbd61112002, type: 3}
   currentLevel: 0
   levelText: {fileID: 290698896}
 --- !u!4 &144789588
