@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.UI.Image;
 
 public class Tile : MonoBehaviour
 {
@@ -13,9 +14,13 @@ public class Tile : MonoBehaviour
 
     public bool isOccupied = false;
     public GameObject _char = null;
+    //Vector3 screenPos;
+    //Vector2 rayOrigin;
 
     private void Start()
     {
+        //screenPos = GameManager.Instance.mainCamera.WorldToScreenPoint(transform.position);
+        //rayOrigin = GameManager.Instance.mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, GameManager.Instance.mainCamera.nearClipPlane));
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -25,6 +30,7 @@ public class Tile : MonoBehaviour
         {
             if (!isOccupied)
             {
+                Debug.Log($"<color=yellow>Character trigger : {collision.name}</color>");
                 spriteRenderer.color = occupiedColor;
                 isOccupied = true;
                 _char = collision.gameObject;
@@ -41,18 +47,55 @@ public class Tile : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
+            TouchController _player = collision.GetComponent<TouchController>();
             if (isOccupied && _char == collision.gameObject)
             {
+                Debug.Log($"<color=red> Object exit : {collision.name} </color>");
                 spriteRenderer.color = defaultColor;
                 isOccupied = false;
                 _char = null;
             }
-            else
+            /*else
             {
+                Debug.Log($"<color=yellow> Object exit : {collision.name} </color>");
                 spriteRenderer.color = occupiedColor;
-                isOccupied = true;
+                isOccupied = true; 
                 _char = collision.gameObject;
-            }
+            }*/
+
         }
+        //CheckStatusTile();
+    }
+
+    void CheckStatusTile()
+    {
+        RaycastHit2D hit = Physics2D.CircleCast(transform.position, 0.3f, -transform.forward);
+        if (hit.collider.CompareTag("Object"))
+        {
+            Debug.Log($"<color=blue>{gameObject.name} Hitter : {hit.collider.name}</color>");
+            spriteRenderer.color = occupiedColor;
+            isOccupied = true;
+            _char = hit.collider.gameObject;
+        }
+        else
+        {
+            Debug.Log($"<color=blue>{gameObject.name} No Hitter Object</color>");
+            spriteRenderer.color = defaultColor;
+            isOccupied = false;
+            _char = null;
+        }
+    }
+
+
+    public void ChangeToHitColor()
+    {
+        StartCoroutine(ChangeHitColor());
+    }
+
+    IEnumerator ChangeHitColor()
+    {
+        spriteRenderer.color = hitColor;
+        yield return new WaitForSeconds(0.2f);
+        spriteRenderer.color = occupiedColor;
     }
 }

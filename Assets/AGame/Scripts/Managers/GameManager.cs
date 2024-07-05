@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour
 
         currentLevelInstance = Instantiate(mainLevelPrefab[levelIndex]);
         objectCount = CountObjectsWithTag("Object");
-        Debug.Log("Number of objects with tag 'Object': " + objectCount);
+        //Debug.Log("Number of objects with tag 'Object': " + objectCount);
         UIManager.Instance.SwitchToInGameUI();
         UpdateLevelText();
     }
