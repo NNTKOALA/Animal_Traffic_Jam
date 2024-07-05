@@ -11,10 +11,11 @@ GameObject:
   - component: {fileID: 2304375142147459365}
   - component: {fileID: 2337348575324150259}
   - component: {fileID: 1620458272934320978}
+  - component: {fileID: 5274730383290856277}
   - component: {fileID: 8570141989339094447}
-  m_Layer: 0
-  m_Name: Obstacle1
-  m_TagString: Untagged
+  m_Layer: 7
+  m_Name: Turtle obj
+  m_TagString: Object
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,7 +51,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -66,12 +67,24 @@ CapsuleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.2}
   m_Size: {x: 0.6, y: 0.8}
   m_Direction: 0
+--- !u!114 &5274730383290856277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6147822766084808743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b94290563bd675d4c9e3ed9d74514712, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8570141989339094447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,6 +145,18 @@ PrefabInstance:
       propertyPath: m_Bounds.m_Extent.y
       value: 0.5185901
       objectReference: {fileID: 0}
+    - target: {fileID: 507388786305430248, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 784308049526714166, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1098923672361882865, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 2531683410623873083, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
       propertyPath: m_Bounds.m_Center.x
       value: 0.037784815
@@ -163,6 +188,10 @@ PrefabInstance:
     - target: {fileID: 2697731437126982402, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
       propertyPath: m_Bounds.m_Extent.y
       value: 0.9638499
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911403025396381698, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3155335538149268826, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
       propertyPath: m_Bounds.m_Center.x
@@ -236,9 +265,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3284476378859685662, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3527022233848404352, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 4347210714342081004, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
       propertyPath: m_Name
       value: Turtle
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347210714342081004, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4686015399040013952, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
       propertyPath: m_Bounds.m_Center.x
@@ -252,6 +293,22 @@ PrefabInstance:
       propertyPath: m_Bounds.m_Extent.x
       value: 0.7220902
       objectReference: {fileID: 0}
+    - target: {fileID: 4881530058486912200, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4882232614622141420, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5197351235030045747, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5975087900627926938, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 6434266277017187682, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
       propertyPath: m_Bounds.m_Center.x
       value: 0.040584803
@@ -264,6 +321,14 @@ PrefabInstance:
       propertyPath: m_Bounds.m_Extent.y
       value: 0.6366899
       objectReference: {fileID: 0}
+    - target: {fileID: 6895577837792189287, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7120539988129548526, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7587157234861312218, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
       propertyPath: m_Bounds.m_Center.x
       value: 0.0362249
@@ -271,6 +336,14 @@ PrefabInstance:
     - target: {fileID: 7587157234861312218, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
       propertyPath: m_Bounds.m_Center.y
       value: -1.603965
+      objectReference: {fileID: 0}
+    - target: {fileID: 8001671527195544644, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8371577177232758311, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 263fd095552a12f49b540c3d20969bf5, type: 3}
