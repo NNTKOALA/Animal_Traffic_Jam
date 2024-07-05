@@ -109,7 +109,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -134,8 +134,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 2.2}
-  m_Size: {x: 0.7, y: 5}
+  m_Offset: {x: -0.0042592287, y: 2.2066188}
+  m_Size: {x: 0.72234654, y: 5.013238}
   m_Direction: 0
 --- !u!50 &7953723001063450791
 Rigidbody2D:
@@ -170,6 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a2b1234cb46e2c499f1eaf7e2fc178b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultHeadPosition: {fileID: 7558366924432224838}
   headPosition: {fileID: 7558366924432224838}
   bodyPosition: {fileID: 7953723001063450789}
   partsToColor:
@@ -179,14 +180,11 @@ MonoBehaviour:
   - {fileID: 2989202091150714395}
   - {fileID: 9080770240861356961}
   - {fileID: 2466997932591971690}
-  moveSpeed: 5
-  rotationSpeed: 5
-  raycastDistance: 0.5
-  mapBoundaryY: 10
   isDragging: 0
   isColliding: 0
-  currentHeadTile: {fileID: 0}
   currentBodyTile: {fileID: 0}
+  currentHeadTile: {fileID: 0}
+  direction: {x: 0, y: 0}
 --- !u!114 &4862270681060053762
 MonoBehaviour:
   m_ObjectHideFlags: 0

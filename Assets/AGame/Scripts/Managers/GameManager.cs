@@ -88,6 +88,23 @@ public class GameManager : MonoBehaviour
         LoadLevel(currentLevel);
     }
 
+    public void DelaySpawnNextLevel()
+    {
+        if (currentLevelInstance != null)
+        {
+            Destroy(currentLevelInstance.gameObject);
+        }
+        UIManager.Instance.DeActiveInGameUI();
+        StartCoroutine(DelayNextLevel());
+    }
+
+    IEnumerator DelayNextLevel()
+    {
+        yield return new WaitForSeconds(4f);
+        UIManager.Instance.SwitchToInGameUI();
+        NextLevel();
+    }
+
     public void SpawnLevelById(int id)
     {
         currentLevel = id;
@@ -103,7 +120,7 @@ public class GameManager : MonoBehaviour
 
         currentLevelInstance = Instantiate(mainLevelPrefab[levelIndex]);
         objectCount = CountObjectsWithTag("Object");
-        Debug.Log("Number of objects with tag 'Object': " + objectCount);
+        //Debug.Log("Number of objects with tag 'Object': " + objectCount);
         UIManager.Instance.SwitchToInGameUI();
         UpdateLevelText();
     }
