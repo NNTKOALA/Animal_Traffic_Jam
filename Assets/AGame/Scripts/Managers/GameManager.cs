@@ -88,6 +88,23 @@ public class GameManager : MonoBehaviour
         LoadLevel(currentLevel);
     }
 
+    public void DelaySpawnNextLevel()
+    {
+        if (currentLevelInstance != null)
+        {
+            Destroy(currentLevelInstance.gameObject);
+        }
+        UIManager.Instance.DeActiveInGameUI();
+        StartCoroutine(DelayNextLevel());
+    }
+
+    IEnumerator DelayNextLevel()
+    {
+        yield return new WaitForSeconds(4f);
+        UIManager.Instance.SwitchToInGameUI();
+        NextLevel();
+    }
+
     public void SpawnLevelById(int id)
     {
         currentLevel = id;
