@@ -30,7 +30,7 @@ public class Tile : MonoBehaviour
         {
             if (!isOccupied)
             {
-                Debug.Log($"<color=yellow>Character trigger : {collision.name}</color>");
+                //Debug.Log($"<color=yellow>Character trigger : {collision.name}</color>");
                 spriteRenderer.color = occupiedColor;
                 isOccupied = true;
                 _char = collision.gameObject;
@@ -50,7 +50,7 @@ public class Tile : MonoBehaviour
             TouchController _player = collision.GetComponent<TouchController>();
             if (isOccupied && _char == collision.gameObject)
             {
-                Debug.Log($"<color=red> Object exit : {collision.name} </color>");
+                //Debug.Log($"<color=red> Object exit : {collision.name} </color>");
                 spriteRenderer.color = defaultColor;
                 isOccupied = false;
                 _char = null;
@@ -72,14 +72,14 @@ public class Tile : MonoBehaviour
         RaycastHit2D hit = Physics2D.CircleCast(transform.position, 0.3f, -transform.forward);
         if (hit.collider.CompareTag("Object"))
         {
-            Debug.Log($"<color=blue>{gameObject.name} Hitter : {hit.collider.name}</color>");
+            //Debug.Log($"<color=blue>{gameObject.name} Hitter : {hit.collider.name}</color>");
             spriteRenderer.color = occupiedColor;
             isOccupied = true;
             _char = hit.collider.gameObject;
         }
         else
         {
-            Debug.Log($"<color=blue>{gameObject.name} No Hitter Object</color>");
+            //Debug.Log($"<color=blue>{gameObject.name} No Hitter Object</color>");
             spriteRenderer.color = defaultColor;
             isOccupied = false;
             _char = null;

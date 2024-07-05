@@ -22,7 +22,7 @@ public class TouchController : MonoBehaviour
     Collider2D charCollider;
     Vector2 initialMousePos;
     Vector2 currentMousePos;
-    float headValue = 0.6f;
+    float headValue = 0.4f;
     float bodyValue = 0.5f;
     float moveSpeed = 5f;
     float rotationSpeed = 5f;
@@ -87,6 +87,7 @@ public class TouchController : MonoBehaviour
             }
             currentActivePlayer.gameObject.tag = "Object";
             currentActivePlayer = null;
+            isColliding = false;
         }
     }
 
@@ -113,11 +114,10 @@ public class TouchController : MonoBehaviour
     {
         if (!isColliding)
         {
-            Vector2 direction = Camera.main.ScreenToWorldPoint(currentMousePos) - bodyPosition.position;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            Quaternion rotation = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-            bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, rotation, rotationSpeed);
-
+            Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
+            Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, endpoint - bodyPosition.position);
+            desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
+            bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
             animController.ChangeAnim("move");
             AudioManager.Instance.PlaySFX("Move");
         }
@@ -306,10 +306,10 @@ public class TouchController : MonoBehaviour
             {
                 currentBodyTile = tile;
             }
-            Debug.Log($"<color=green>Head Distance {gameObject.name} and {tile.name} is {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
-            if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue)
+            //Debug.Log($"<color=green>Head Distance {gameObject.name} and {tile.name} is {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
+            if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue && !isColliding)
             {
-                Debug.Log($"<color=red> Head Distance : {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
+                //Debug.Log($"<color=red> Head Distance : {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
                 currentHeadTile = tile;
             }
         }
