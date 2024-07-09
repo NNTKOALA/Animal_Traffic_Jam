@@ -9,14 +9,12 @@ public class LoadingUI : MonoBehaviour
     public void ActiveLoading()
     {
         efx.transform.localPosition = new Vector2(-1563f, -30f);
-        StartCoroutine(ActiveEfx());
+        ActiveEfx();
     }
 
-    IEnumerator ActiveEfx()
+    void ActiveEfx()
     {
-        efx.LeanMoveLocalX(-261f, 1f);
-        yield return new WaitForSeconds(3f);
-        efx.LeanMoveLocalX(1564f, 1f).setOnComplete(() =>
+        efx.LeanMoveLocalX(1564f, 3f).setOnComplete(() =>
         {
             efx.transform.localPosition = new Vector2(-1563f, -30f);
 

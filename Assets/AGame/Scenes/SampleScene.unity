@@ -3426,7 +3426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wireColor: {r: 1, g: 1, b: 1, a: 1}
-  UnitsSize: 12
+  UnitsSize: 11
   constraint: 1
   camera: {fileID: 519420031}
   executeInUpdate: 0
@@ -5143,18 +5143,6 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1863571624}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: LoadingGameSceneCoroutine
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 4
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -11403,6 +11391,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8516d94e86e80d418aa3bc5b7177024, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   mainMenuUI: {fileID: 1918813687}
   inGameUI: {fileID: 616313074}
   winUI: {fileID: 1125543227}

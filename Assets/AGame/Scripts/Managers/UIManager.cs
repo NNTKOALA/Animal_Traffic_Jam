@@ -2,8 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.ParticleSystem;
 
+public enum UIState
+{
+    None,
+    Menu,
+    Loading,
+    InGame,
+}
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
@@ -19,7 +25,7 @@ public class UIManager : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
-
+    [SerializeField] UIState state;
     [SerializeField] MainMenuUI mainMenuUI;
     [SerializeField] GameObject inGameUI;
     [SerializeField] GameObject winUI;
@@ -34,25 +40,38 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         ButtonClicked();
-        LoadingGameSceneCoroutine(4f);
+        LoadingGameSceneCoroutine(3f);
         firework1.Stop();
         firework2.Stop();
         mainMenuUI.gameObject.SetActive(true);
         nextLevelBtn.gameObject.SetActive(false);
     }
 
+    public void ChangeState(UIState _state)
+    {
+        if (state != _state)
+        {
+            state = _state;
+            loadingGameUI.gameObject.SetActive(state == UIState.Loading);
+            mainMenuUI.gameObject.SetActive(state == UIState.Menu);
+            inGameUI.gameObject.SetActive(state == UIState.InGame);
+
+        }
+    }
+
     private void ButtonClicked()
     {
         startBtn.onClick.AddListener(() =>
         {
-            mainMenuUI.gameObject.SetActive(false);
             StartCoroutine(DelayStartGame());
         });
     }
 
     IEnumerator DelayStartGame()
     {
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(1.5f);
+        mainMenuUI.gameObject.SetActive(false);
+        inGameUI.SetActive(true);
         GameManager.Instance.SpawnLevelById(GameManager.Instance.currentLevel);
     }
 
@@ -83,7 +102,8 @@ public class UIManager : MonoBehaviour
 
     public void SwitchToInGameUI()
     {
-        SwitchTo(inGameUI);
+        //SwitchTo(inGameUI);
+        
         mainMenuUI.gameObject.SetActive(false);
     }
 
@@ -94,7 +114,7 @@ public class UIManager : MonoBehaviour
         firework1.Play();
         firework2.Play();
         inGameUI.SetActive(true);
-        Invoke("ActiveButton", 3f);
+        Invoke("ActiveButton", 2f);
     }
 
     public void LoadingGameSceneCoroutine(float delay)

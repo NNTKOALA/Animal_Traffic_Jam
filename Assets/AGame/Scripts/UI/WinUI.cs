@@ -32,6 +32,7 @@ public class WinUI : MonoBehaviour
     {
         nextLevelBtn.onClick.AddListener(() =>
         {
+            UIManager.Instance.LoadingGameSceneCoroutine(3f);
             GameManager.Instance.DelaySpawnNextLevel();
             gameObject.SetActive(false);
         });

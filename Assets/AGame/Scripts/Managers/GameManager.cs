@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class GameManager : MonoBehaviour
 {
@@ -34,20 +32,22 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        currentLevel = 0;
+        currentLevel = PlayerPrefs.GetInt("CurrentLevel", 0);
         PauseGame();
         UpdateLevelText();
     }
 
-    void Update()
+    private void OnApplicationQuit()
     {
-
+        SaveCurrentLevel();
     }
 
     public void StartNewGame()
     {
         isPlaying = true;
+        currentLevel = PlayerPrefs.GetInt("CurrentLevel", 0);
         ResumeGame();
+        LoadLevel(currentLevel);
     }
 
     public void OnNewGame()
@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
             Destroy(currentLevelInstance.gameObject);
         }
         UIManager.Instance.SwitchToMainMenuUI();
+        SaveCurrentLevel();
     }
 
     public void PauseGame()
@@ -86,21 +87,21 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt(PREF_MAX_LEVEL, currentLevel);
         }
         LoadLevel(currentLevel);
+        SaveCurrentLevel();
     }
 
     public void DelaySpawnNextLevel()
     {
-        if (currentLevelInstance != null)
-        {
-            Destroy(currentLevelInstance.gameObject);
-        }
-        UIManager.Instance.DeActiveInGameUI();
         StartCoroutine(DelayNextLevel());
     }
 
     IEnumerator DelayNextLevel()
     {
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(1.5f);
+        if (currentLevelInstance != null)
+        {
+            Destroy(currentLevelInstance.gameObject);
+        }
         UIManager.Instance.SwitchToInGameUI();
         NextLevel();
     }
@@ -109,6 +110,23 @@ public class GameManager : MonoBehaviour
     {
         currentLevel = id;
         LoadLevel(currentLevel);
+        SaveCurrentLevel();
+    }
+
+    public void DelaySpawnChoosenLevel()
+    {
+        StartCoroutine(DelayChooseLevel());
+    }
+
+    IEnumerator DelayChooseLevel()
+    {
+        yield return new WaitForSeconds(1.5f);
+        if (currentLevelInstance != null)
+        {
+            Destroy(currentLevelInstance.gameObject);
+        }
+        UIManager.Instance.SwitchToInGameUI();
+        SpawnLevelById(currentLevel);
     }
 
     private void LoadLevel(int levelIndex)
@@ -120,8 +138,7 @@ public class GameManager : MonoBehaviour
 
         currentLevelInstance = Instantiate(mainLevelPrefab[levelIndex]);
         objectCount = CountObjectsWithTag("Object");
-        //Debug.Log("Number of objects with tag 'Object': " + objectCount);
-        UIManager.Instance.SwitchToInGameUI();
+        //UIManager.Instance.SwitchToInGameUI();
         UpdateLevelText();
     }
 
@@ -156,5 +173,11 @@ public class GameManager : MonoBehaviour
     public void ButtonClick()
     {
         AudioManager.Instance.PlaySFX("Click");
+    }
+
+    private void SaveCurrentLevel()
+    {
+        PlayerPrefs.SetInt("CurrentLevel", currentLevel);
+        PlayerPrefs.Save();
     }
 }

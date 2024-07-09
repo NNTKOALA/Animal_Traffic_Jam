@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System;
 
 public class LevelButton : MonoBehaviour
 {
@@ -24,7 +22,7 @@ public class LevelButton : MonoBehaviour
         selectable = true;
         onPress = onButtonPress;
         buttonLock.SetActive(false);
-        buttonIndex.text = (index+1).ToString();
+        buttonIndex.text = (index + 1).ToString();
         indexLevel = index;
     }
 
@@ -36,6 +34,9 @@ public class LevelButton : MonoBehaviour
 
     private void OnPress()
     {
-        onPress?.Invoke(indexLevel);
+        if (selectable)
+        {
+            onPress?.Invoke(indexLevel);
+        }
     }
 }

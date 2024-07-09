@@ -11,14 +11,13 @@ public class MainMenuUI : MonoBehaviour
 
     void Start()
     {
-        
         background.alpha = 0f;
         lightEfx.LeanRotateAround(Vector3.forward, 360, 15f).setLoopClamp();
         StartCoroutine(ActiveEfx());
     }
     IEnumerator ActiveEfx()
     {
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(1.5f);
         TurnBackGround();
     }
 

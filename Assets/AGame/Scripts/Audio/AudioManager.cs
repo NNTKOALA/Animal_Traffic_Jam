@@ -25,6 +25,7 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
+        LoadAudioSettings();
         PlayMusic("Theme");
     }
 
@@ -60,10 +61,33 @@ public class AudioManager : MonoBehaviour
     public void ToggleMusic()
     {
         musicSource.mute = !musicSource.mute;
+        PlayerPrefs.SetInt("MusicMute", musicSource.mute ? 1 : 0);
     }
 
     public void ToggleSFX()
     {
         sfxSource.mute = !sfxSource.mute;
+        PlayerPrefs.SetInt("SFXMute", sfxSource.mute ? 1 : 0);
+    }
+
+    private void LoadAudioSettings()
+    {
+        if (PlayerPrefs.HasKey("MusicMute"))
+        {
+            musicSource.mute = PlayerPrefs.GetInt("MusicMute") == 1;
+        }
+        else
+        {
+            PlayerPrefs.SetInt("MusicMute", 0);
+        }
+
+        if (PlayerPrefs.HasKey("SFXMute"))
+        {
+            sfxSource.mute = PlayerPrefs.GetInt("SFXMute") == 1;
+        }
+        else
+        {
+            PlayerPrefs.SetInt("SFXMute", 0);
+        }
     }
 }
