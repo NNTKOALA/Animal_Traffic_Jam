@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class Cache
 {
-    static Dictionary<Collider2D, Tile> characters = new Dictionary<Collider2D, Tile>();
+    public static Dictionary<Collider2D, Tile> characters = new Dictionary<Collider2D, Tile>();
 
     public static Tile GetTile(Collider2D collider)
     {

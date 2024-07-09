@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.53333336, g: 0.8666667, b: 0.5137255, a: 1}
+  m_Color: {r: 0.53333336, g: 0.8666667, b: 0.7019608, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -115,7 +115,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 8911017690039952653}
-  defaultColor: {r: 0.53333336, g: 0.8666667, b: 0.5137255, a: 1}
+  defaultColor: {r: 0.53333336, g: 0.8666667, b: 0.7019608, a: 1}
   occupiedColor: {r: 0.25490198, g: 0.38039216, b: 0.2509804, a: 1}
   hitColor: {r: 0.9529412, g: 0.5019608, b: 0.5019608, a: 1}
   isOccupied: 0

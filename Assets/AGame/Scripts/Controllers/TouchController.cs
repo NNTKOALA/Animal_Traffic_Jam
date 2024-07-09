@@ -17,7 +17,8 @@ public class TouchController : MonoBehaviour
     public bool isColliding = false;
     public Tile currentBodyTile = null;
     public Tile currentHeadTile = null;
-    public Vector2 direction;
+    private Vector3 currentHeadPosition;
+    private Vector3 currentBodyPosition;
 
     Collider2D charCollider;
     Vector2 initialMousePos;
@@ -33,7 +34,6 @@ public class TouchController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animController = GetComponent<AnimController>();
         charCollider = GetComponent<Collider2D>();
-        direction = (headPosition.position - bodyPosition.position).normalized;
     }
 
     private void OnMouseDown()
@@ -54,6 +54,7 @@ public class TouchController : MonoBehaviour
             }
             currentActivePlayer = clickedController;
             currentActivePlayer.TouchObject();
+            //currentActivePlayer.GetTilePosition();
         }
     }
 
@@ -67,7 +68,7 @@ public class TouchController : MonoBehaviour
             if (distance > 3f)
             {
                 DragObject();
-                //UpdateHeadAndBodyPositions();
+                //GetTilePosition();
             }
         }
     }
@@ -80,6 +81,7 @@ public class TouchController : MonoBehaviour
             if (!isColliding)
             {
                 SetPostionToTile();
+                //GetTilePosition();
             }
             else
             {
@@ -115,9 +117,13 @@ public class TouchController : MonoBehaviour
         if (!isColliding)
         {
             Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
-            Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, endpoint - bodyPosition.position);
-            desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
-            bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
+            Vector3 direction = endpoint - bodyPosition.position;
+
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            Vector3 newRotation = new Vector3(0, 0, angle - 90);
+            bodyPosition.eulerAngles = Vector3.Lerp(bodyPosition.eulerAngles, newRotation, rotationSpeed);
+
             animController.ChangeAnim("move");
             AudioManager.Instance.PlaySFX("Move");
         }
@@ -128,6 +134,25 @@ public class TouchController : MonoBehaviour
         isDragging = false;
         ChangeCharColor(Color.white);
     }
+
+    /*    public void GetTilePosition()
+        {
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(headPosition.position, 0.5f, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("Tile"));
+
+            foreach (RaycastHit2D hit in hits)
+            {
+                if (hit.collider != null && hit.collider.CompareTag("Tile"))
+                {
+                    Tile tile = Cache.GetTile(hit.collider);
+                    //Debug.Log($"<color=green>Head Distance {gameObject.name} and {tile.name} is {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
+                    if (!tile.isOccupied && Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue && !isColliding)
+                    {
+                        //Debug.Log($"<color=red> Head Distance : {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
+                        currentHeadTile = tile;
+                    }
+                }
+            }
+        }*/
 
     public void ResetPositionToSavedTile()
     {
@@ -152,21 +177,27 @@ public class TouchController : MonoBehaviour
         }
     }
 
-
-    /*private void UpdateHeadAndBodyPositions()
+/*    public void ResetPositionToSavedTile()
     {
-        Debug.Log("Update Character position");
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(headPosition.position, bodyValue);
+        headPosition.position = currentHeadPosition;
+        bodyPosition.position = currentBodyPosition;
+        Vector3 upVector = (headPosition.position - transform.position).normalized;
+        transform.up = upVector;
+    }
 
-        foreach (var hitCollider in hitColliders)
+    public void GetTilePosition()
+    {
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(headPosition.position, 0.5f, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("Tile"));
+
+        foreach (RaycastHit2D hit in hits)
         {
-            if (hitCollider.CompareTag("Tile"))
+            if (hit.collider != null && hit.collider.CompareTag("Tile"))
             {
-                Debug.Log($"<color=red>Tile : {hitCollider.name}</color>");
-                Tile tile = hitCollider.GetComponent<Tile>();
-                if (tile != null)
+                Tile tile = Cache.GetTile(hit.collider);
+                if (!tile.isOccupied && Vector3.Distance(defaultHeadPosition.position, tile.transform.position) < headValue && !isColliding)
                 {
                     currentHeadTile = tile;
+                    currentHeadPosition = tile.transform.position;
                 }
             }
         }
@@ -175,24 +206,6 @@ public class TouchController : MonoBehaviour
 
     public void EscapingMovement()
     {
-        /*RaycastHit2D hit = Physics2D.Raycast(bodyPosition.position, bodyPosition.up.normalized);
-        if (hit.collider.CompareTag("Object"))
-        {
-            if (hit.collider.CompareTag("Object"))
-            {
-                Debug.Log($"<color=yellow> Raycast to {hit.collider.name}</color>");
-                //Set head positions
-                ResetPositionToSavedTile();
-            }
-            else
-            {
-                //No Character block -> move to out area
-                StartCoroutine(MoveCharacterOutsideMap());
-                Destroy(gameObject, 2f);
-                GameManager.Instance.DecreaseObjectCount();
-            }
-
-        }*/
         RaycastHit2D[] hits = Physics2D.CircleCastAll(bodyPosition.position, 0.25f, bodyPosition.up, Mathf.Infinity, LayerMask.GetMask("Player"));
         bool objectHit = false;
 
@@ -265,37 +278,41 @@ public class TouchController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        /*if (collision.CompareTag("Object"))
-        {
-            ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
-            isColliding = true;
-            return;
-        }*/
         if (collision.CompareTag("Tile"))
         {
             Tile tile = collision.GetComponent<Tile>();
             if (tile != null)
             {
-                if(tile.isOccupied)
+                if (tile.isOccupied)
                 {
                     ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
                     tile.ChangeToHitColor();
                     isColliding = true;
                     return;
                 }
-                /*if (Vector3.Distance(bodyPosition.position, tile.transform.position) < bodyValue)
-                {
-                    currentBodyTile = tile;
-                }
-                Debug.Log($"<color=green>Head Distance {gameObject.name} and {tile.name} is {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
-                if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue)
-                {
-                    Debug.Log($"<color=red> Head Distance : {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
-                    currentHeadTile = tile;
-                }*/
             }
         }
     }
+
+    /*    private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (collision.CompareTag("Tile"))
+            {
+                Tile tile = collision.GetComponent<Tile>();
+                if (tile != null)
+                {
+                    if (tile.isOccupied)
+                    {
+                        ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
+                        tile.ChangeToHitColor();
+                        isColliding = true;
+                        currentHeadPosition = headPosition.position;
+                        currentBodyPosition = bodyPosition.position;
+                        return;
+                    }
+                }
+            }
+        }*/
 
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -317,22 +334,6 @@ public class TouchController : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        /*if (collision.CompareTag("Tile"))
-        {
-            Tile tile = collision.GetComponent<Tile>();
-            if (tile != null)
-            {
-                if (currentBodyTile == tile)
-                {
-                    currentBodyTile = null;
-                }
-                if (currentHeadTile == tile)
-                {
-                    currentHeadTile = null;
-                }
-            }
-        }*/
-
         if (collision.CompareTag("Object"))
         {
             ChangeCharColor(Color.white);

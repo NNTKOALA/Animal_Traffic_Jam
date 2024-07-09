@@ -182,6 +182,7 @@ MonoBehaviour:
   - {fileID: 2265315331002201762}
   isDragging: 0
   isColliding: 0
+  currentBodyTile: {fileID: 0}
   currentHeadTile: {fileID: 0}
   direction: {x: 0, y: 0}
 --- !u!114 &1506020428997327566
