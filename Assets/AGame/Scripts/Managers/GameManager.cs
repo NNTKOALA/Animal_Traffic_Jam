@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class GameManager : MonoBehaviour
 {
@@ -32,7 +34,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        currentLevel = PlayerPrefs.GetInt("current_level");
+        currentLevel = 0;
         PauseGame();
         UpdateLevelText();
     }
@@ -44,15 +46,12 @@ public class GameManager : MonoBehaviour
 
     public void StartNewGame()
     {
-        currentLevel = PlayerPrefs.GetInt("current_level");
         isPlaying = true;
-        LoadLevel(currentLevel);
         ResumeGame();
     }
 
     public void OnNewGame()
     {
-        SaveCurrentLevel();
         if (currentLevelInstance != null)
         {
             Destroy(currentLevelInstance.gameObject);
@@ -86,8 +85,6 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetInt(PREF_MAX_LEVEL, currentLevel);
         }
-
-        SaveCurrentLevel();
         LoadLevel(currentLevel);
     }
 
@@ -111,7 +108,6 @@ public class GameManager : MonoBehaviour
     public void SpawnLevelById(int id)
     {
         currentLevel = id;
-        SaveCurrentLevel();
         LoadLevel(currentLevel);
     }
 
@@ -124,6 +120,7 @@ public class GameManager : MonoBehaviour
 
         currentLevelInstance = Instantiate(mainLevelPrefab[levelIndex]);
         objectCount = CountObjectsWithTag("Object");
+        //Debug.Log("Number of objects with tag 'Object': " + objectCount);
         UIManager.Instance.SwitchToInGameUI();
         UpdateLevelText();
     }
@@ -159,11 +156,5 @@ public class GameManager : MonoBehaviour
     public void ButtonClick()
     {
         AudioManager.Instance.PlaySFX("Click");
-    }
-
-    private void SaveCurrentLevel()
-    {
-        PlayerPrefs.SetInt("current_level", currentLevel);
-        PlayerPrefs.Save();
     }
 }

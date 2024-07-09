@@ -53,7 +53,7 @@ public class UIManager : MonoBehaviour
     IEnumerator DelayStartGame()
     {
         yield return new WaitForSeconds(4f);
-        GameManager.Instance.SpawnLevelById(0);
+        GameManager.Instance.SpawnLevelById(GameManager.Instance.currentLevel);
     }
 
     public void DeactiveAll()
