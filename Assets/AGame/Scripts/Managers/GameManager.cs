@@ -35,7 +35,6 @@ public class GameManager : MonoBehaviour
     {
         currentLevel = PlayerPrefs.GetInt("CurrentLevel", 0);
         PauseGame();
-        UpdateLevelText();
     }
 
     private void OnApplicationQuit()
@@ -89,6 +88,7 @@ public class GameManager : MonoBehaviour
         }
         LoadLevel(currentLevel);
         SaveCurrentLevel();
+        UpdateLevelText();
     }
 
     public void DelaySpawnNextLevel()
@@ -111,12 +111,13 @@ public class GameManager : MonoBehaviour
     {
         LoadLevel(currentLevel);
         SaveCurrentLevel();
+        UpdateLevelText();
     }
 
     public void SpawnLevelById(int id)
     {
         LoadLevel(id);
-        SaveCurrentLevel();
+        UpdateChoosenLevelText(id);
     }
 
     public void DelaySpawnChoosenLevel(int id)
@@ -145,7 +146,6 @@ public class GameManager : MonoBehaviour
         currentLevelInstance = Instantiate(mainLevelPrefab[levelIndex]);
         objectCount = CountObjectsWithTag("Object");
         //UIManager.Instance.SwitchToInGameUI();
-        UpdateLevelText();
     }
 
     public void DecreaseObjectCount()
@@ -172,7 +172,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            levelText.text = $"You finish the beta test";
+            Debug.LogError("Level text is not assigned.");
         }
     }
 
@@ -185,5 +185,17 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("CurrentLevel", currentLevel);
         PlayerPrefs.Save();
+    }
+
+    public void UpdateChoosenLevelText(int selectedLevel)
+    {
+        if (levelText != null)
+        {
+            levelText.text = $"Level {selectedLevel + 1}";
+        }
+        else
+        {
+            Debug.LogError("Level text is not assigned.");
+        }
     }
 }

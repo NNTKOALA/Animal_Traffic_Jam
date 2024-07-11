@@ -105,26 +105,28 @@ public class TouchController : MonoBehaviour
 
     public void DragObject()
     {
+        if (isColliding)
+        {
+            return;
+        }
+
         Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
         Vector3 direction = endpoint - bodyPosition.position;
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         float currentRotation = angle - 90;
 
-        if (!isColliding)
+        Quaternion targetRotation = Quaternion.Euler(0, 0, currentRotation);
+
+        if (Mathf.Abs(bodyPosition.eulerAngles.y - 180) < 0.1f)
         {
-            Quaternion targetRotation = Quaternion.Euler(0, 0, currentRotation);
-
-            if (Mathf.Abs(bodyPosition.eulerAngles.y - 180) < 0.1f)
-            {
-                targetRotation = Quaternion.Euler(0, -180, currentRotation);
-            }
-
-            bodyPosition.rotation = Quaternion.Lerp(bodyPosition.rotation, targetRotation, rotationSpeed);
-
-            animController.ChangeAnim("move");
-            AudioManager.Instance.PlaySFX("Move");
+            targetRotation = Quaternion.Euler(0, -180, currentRotation);
         }
+
+        bodyPosition.rotation = Quaternion.Lerp(bodyPosition.rotation, targetRotation, rotationSpeed);
+
+        animController.ChangeAnim("move");
+        AudioManager.Instance.PlaySFX("Move");
     }
 
 

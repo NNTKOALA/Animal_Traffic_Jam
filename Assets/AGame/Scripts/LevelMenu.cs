@@ -9,13 +9,11 @@ public class LevelMenu : MonoBehaviour
     [SerializeField] CanvasGroup background;
     [SerializeField] GameObject frame;
     [SerializeField] Button closeBtn;
+
     private void OnEnable()
     {
         FrameEfx();
-    }
 
-    void Start()
-    {
         int maxLevel = GameManager.Instance.currentLevel;
 
         for (int i = 0; i < levelButtonList.Count; i++)
@@ -41,6 +39,7 @@ public class LevelMenu : MonoBehaviour
         Debug.Log("Select Level => " + id);
         UIManager.Instance.LoadingGameSceneCoroutine(3f);
         GameManager.Instance.DelaySpawnChoosenLevel(id);
+        GameManager.Instance.UpdateChoosenLevelText(id);
     }
 
     void FrameEfx()
