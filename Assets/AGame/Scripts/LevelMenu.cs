@@ -34,9 +34,9 @@ public class LevelMenu : MonoBehaviour
 
     public void SelectLevel(int id)
     {
+        Debug.Log("Select Level => " + id);
         UIManager.Instance.LoadingGameSceneCoroutine(3f);
-        GameManager.Instance.DelaySpawnChoosenLevel();
-        gameObject.SetActive(false);
+        GameManager.Instance.DelaySpawnChoosenLevel(id);
     }
 
     void FrameEfx()

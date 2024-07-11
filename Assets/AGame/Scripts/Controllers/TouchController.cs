@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class TouchController : MonoBehaviour
@@ -24,22 +22,32 @@ public class TouchController : MonoBehaviour
     float headValue = 0.4f;
     float bodyValue = 0.5f;
     float moveSpeed = 5f;
-    float rotationSpeed = 5f;
+    float rotationSpeed = 10f;
     float mapBoundaryY = 10f;
+
+    float initialRotationZ;
+    float blockedRotationZ;
+
+    private Color originalColor;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animController = GetComponent<AnimController>();
         charCollider = GetComponent<Collider2D>();
+        if (partsToColor.Length > 0)
+        {
+            originalColor = partsToColor[0].color;
+        }
     }
 
     void OnMouseDown()
     {
+        Debug.Log("OnMouseDown => " + gameObject.name);
         initialMousePos = Input.mousePosition;
         isColliding = false;
         GameObject clickedCharacter = this.gameObject;
-
+        
         if (clickedCharacter != null && clickedCharacter.CompareTag("Object"))
         {
             TouchController clickedController = clickedCharacter.GetComponent<TouchController>();
@@ -52,6 +60,8 @@ public class TouchController : MonoBehaviour
             }
             currentActivePlayer = clickedController;
             currentActivePlayer.TouchObject();
+            initialRotationZ = transform.rotation.z;
+            Debug.Log("Start Rotation => " + initialRotationZ);
         }
     }
 
@@ -80,6 +90,7 @@ public class TouchController : MonoBehaviour
             }
             else
             {
+                animController.ChangeAnim("idle");
                 currentActivePlayer.ResetPositionToSavedTile();
             }
             currentActivePlayer.gameObject.tag = "Object";
@@ -97,20 +108,26 @@ public class TouchController : MonoBehaviour
 
     public void DragObject()
     {
-        if (!isColliding)
+        Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
+        Vector3 direction = endpoint - bodyPosition.position;
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        Vector3 newRotation = new Vector3(0, 0, angle - 90);
+
+        float offset = Mathf.Abs(blockedRotationZ - initialRotationZ);
+
+        float currentOffset = Mathf.DeltaAngle(newRotation.z, initialRotationZ);
+
+        if (!isColliding || currentOffset < offset)
         {
-            Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
-            Vector3 direction = endpoint - bodyPosition.position;
-
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-            Vector3 newRotation = new Vector3(0, 0, angle - 90);
             bodyPosition.eulerAngles = Vector3.Lerp(bodyPosition.eulerAngles, newRotation, rotationSpeed);
 
             animController.ChangeAnim("move");
             AudioManager.Instance.PlaySFX("Move");
         }
     }
+
 
     public void DropObject()
     {
@@ -132,7 +149,6 @@ public class TouchController : MonoBehaviour
     {
         if (currentHeadTile != null)
         {
-            //Debug.Log($"Set head position : {currentHeadTile.name}");
             headPosition = currentHeadTile.transform;
             Vector3 upVector = (currentHeadTile.transform.position - transform.position).normalized;
             transform.up = upVector;
@@ -151,7 +167,7 @@ public class TouchController : MonoBehaviour
             {
                 if (hit.collider != null && hit.collider.CompareTag("Object"))
                 {
-                    ChangeCharColor(hit.collider);
+                    StartCoroutine(ChangeColorForSeconds(hit.collider, .5f));
                     Debug.Log("Hit: " + hit.collider.name + ", Tag: " + hit.collider.tag);
                     objectHit = true;
                     animController.ChangeAnim("hit");
@@ -171,6 +187,28 @@ public class TouchController : MonoBehaviour
         }
     }
 
+    private IEnumerator ChangeColorForSeconds(Collider2D collider, float duration)
+    {
+        ChangeCharColor(collider);
+        yield return new WaitForSeconds(duration);
+        ResetColor(collider);
+    }
+
+    private void ResetColor(Collider2D collider)
+    {
+        if (collider != null)
+        {
+            SpriteRenderer[] spriteRenderers = collider.GetComponentsInChildren<SpriteRenderer>();
+            if (spriteRenderers != null)
+            {
+                foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+                {
+                    spriteRenderer.color = originalColor;
+                }
+            }
+        }
+    }
+
     private IEnumerator MoveCharacterOutsideMap()
     {
         Debug.Log("Starting movement outside map.");
@@ -182,7 +220,6 @@ public class TouchController : MonoBehaviour
 
         while (bodyPosition.position.y < mapBoundaryY)
         {
-            //bodyPosition.position += (Vector3)direction * moveSpeed * Time.deltaTime;
             bodyPosition.position += bodyPosition.up * moveSpeed * Time.deltaTime;
             yield return null;
         }
@@ -196,10 +233,13 @@ public class TouchController : MonoBehaviour
     {
         if (collider != null)
         {
-            SpriteRenderer spriteRenderer = collider.GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
+            SpriteRenderer[] spriteRenderers = collider.GetComponentsInChildren<SpriteRenderer>();
+            if (spriteRenderers != null)
             {
-                spriteRenderer.color = new Color(243f / 255f, 128f / 255f, 128f / 255f);
+                foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+                {
+                    spriteRenderer.color = new Color(243f / 255f, 128f / 255f, 128f / 255f);
+                }
             }
         }
     }
@@ -217,15 +257,13 @@ public class TouchController : MonoBehaviour
         if (collision.CompareTag("Tile"))
         {
             Tile tile = collision.GetComponent<Tile>();
-            if (tile != null)
+            if (tile != null && tile.isOccupied)
             {
-                if (tile.isOccupied)
-                {
-                    ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
-                    tile.ChangeToHitColor();
-                    isColliding = true;
-                    return;
-                }
+                blockedRotationZ = transform.rotation.z;
+
+                ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
+                tile.ChangeToHitColor();
+                isColliding = true;
             }
         }
     }
@@ -239,10 +277,8 @@ public class TouchController : MonoBehaviour
             {
                 currentBodyTile = tile;
             }
-            //Debug.Log($"<color=green>Head Distance {gameObject.name} and {tile.name} is {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
             if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue && !isColliding)
             {
-                //Debug.Log($"<color=red> Head Distance : {Vector3.Distance(defaultHeadPosition.position, tile.transform.position)}</color>");
                 currentHeadTile = tile;
             }
         }
@@ -250,9 +286,9 @@ public class TouchController : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Object"))
+        if (collision.CompareTag("Object") || collision.CompareTag("Tile"))
         {
-            ChangeCharColor(Color.white);
+            ChangeCharColor(originalColor);
         }
     }
 }

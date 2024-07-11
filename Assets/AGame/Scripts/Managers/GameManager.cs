@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -106,19 +107,24 @@ public class GameManager : MonoBehaviour
         NextLevel();
     }
 
-    public void SpawnLevelById(int id)
+    public void SpawnCurrentLevel(int currentLevel)
     {
-        currentLevel = id;
         LoadLevel(currentLevel);
         SaveCurrentLevel();
     }
 
-    public void DelaySpawnChoosenLevel()
+    public void SpawnLevelById(int id)
     {
-        StartCoroutine(DelayChooseLevel());
+        LoadLevel(id);
+        SaveCurrentLevel();
     }
 
-    IEnumerator DelayChooseLevel()
+    public void DelaySpawnChoosenLevel(int id)
+    {
+        StartCoroutine(DelayChooseLevel(id));
+    }
+
+    IEnumerator DelayChooseLevel(int id)
     {
         yield return new WaitForSeconds(1.5f);
         if (currentLevelInstance != null)
@@ -126,7 +132,7 @@ public class GameManager : MonoBehaviour
             Destroy(currentLevelInstance.gameObject);
         }
         UIManager.Instance.SwitchToInGameUI();
-        SpawnLevelById(currentLevel);
+        SpawnLevelById(id);
     }
 
     private void LoadLevel(int levelIndex)

@@ -72,7 +72,7 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         mainMenuUI.gameObject.SetActive(false);
         inGameUI.SetActive(true);
-        GameManager.Instance.SpawnLevelById(GameManager.Instance.currentLevel);
+        GameManager.Instance.SpawnCurrentLevel(GameManager.Instance.currentLevel);
     }
 
     public void DeactiveAll()
@@ -102,8 +102,8 @@ public class UIManager : MonoBehaviour
 
     public void SwitchToInGameUI()
     {
-        //SwitchTo(inGameUI);
-        
+        inGameUI.SetActive(true);
+
         mainMenuUI.gameObject.SetActive(false);
     }
 

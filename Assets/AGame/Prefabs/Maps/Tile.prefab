@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8911017690039952653}
   - component: {fileID: 8911017690039952652}
   - component: {fileID: 7286081648232259139}
-  m_Layer: 8
+  m_Layer: 2
   m_Name: Tile
   m_TagString: Tile
   m_Icon: {fileID: 0}
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.53333336, g: 0.8666667, b: 0.7019608, a: 1}
+  m_Color: {r: 0.9490196, g: 0.7490196, b: 0.69411767, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -114,9 +114,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38532ee899d587f4398cc1c9d08f2c5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 8911017690039952653}
-  defaultColor: {r: 0.53333336, g: 0.8666667, b: 0.7019608, a: 1}
-  occupiedColor: {r: 0.25490198, g: 0.38039216, b: 0.2509804, a: 1}
+  spriteRenderer: {fileID: 0}
+  defaultColor: {r: 0.9490196, g: 0.7490196, b: 0.69411767, a: 1}
+  occupiedColor: {r: 0.84313726, g: 0.627451, b: 0.5686275, a: 1}
   hitColor: {r: 0.9529412, g: 0.5019608, b: 0.5019608, a: 1}
   isOccupied: 0
   _char: {fileID: 0}

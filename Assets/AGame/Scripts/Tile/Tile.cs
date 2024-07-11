@@ -8,8 +8,8 @@ using static UnityEngine.UI.Image;
 public class Tile : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
-    public Color defaultColor = new Color(136 / 255f, 221 / 255f, 179 / 255f, 1f);
-    public Color occupiedColor = new Color(65 / 255f, 97 / 255f, 64 / 255f, 1f);
+    public Color defaultColor = new Color(242 / 255f, 191 / 255f, 177 / 255f, 1f);
+    public Color occupiedColor = new Color(215 / 255f, 160 / 255f, 145 / 255f, 1f);
     public Color hitColor = new Color(243f / 255f, 128f / 255f, 128f / 255f);
 
     public bool isOccupied = false;
@@ -28,6 +28,7 @@ public class Tile : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
+            
             if (!isOccupied)
             {
                 //Debug.Log($"<color=yellow>Character trigger : {collision.name}</color>");
