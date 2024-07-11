@@ -20,7 +20,11 @@ public class LevelMenu : MonoBehaviour
 
         for (int i = 0; i < levelButtonList.Count; i++)
         {
-            if (i <= maxLevel)
+            if (i == maxLevel)
+            {
+                levelButtonList[i].CurrentLevelButton(SelectLevel, i);
+            }
+            else if (i < maxLevel)
             {
                 levelButtonList[i].OpenButton(SelectLevel, i);
             }

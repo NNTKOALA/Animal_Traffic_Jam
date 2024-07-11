@@ -8,15 +8,15 @@ public class LoadingUI : MonoBehaviour
 
     public void ActiveLoading()
     {
-        efx.transform.localPosition = new Vector2(-1563f, -30f);
+        efx.transform.localPosition = new Vector2(-1600f, -30f);
         ActiveEfx();
     }
 
     void ActiveEfx()
     {
-        efx.LeanMoveLocalX(1564f, 3f).setOnComplete(() =>
+        efx.LeanMoveLocalX(1600f, 3f).setOnComplete(() =>
         {
-            efx.transform.localPosition = new Vector2(-1563f, -30f);
+            efx.transform.localPosition = new Vector2(-1600f, -30f);
 
         });
     }
