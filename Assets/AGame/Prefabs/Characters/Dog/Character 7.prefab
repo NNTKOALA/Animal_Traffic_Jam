@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 5476033078563792656}
   - component: {fileID: 7935656503910360944}
   - component: {fileID: 214283142322667139}
-  - component: {fileID: 5621813577491444382}
+  - component: {fileID: 4581153442968099901}
   - component: {fileID: 6119398717216139841}
   - component: {fileID: 2607978885512658567}
   m_Layer: 3
@@ -134,10 +134,10 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.007019043, y: 3.5185835}
-  m_Size: {x: 0.7645786, y: 7.237167}
+  m_Offset: {x: -0.007019043, y: 3.7111588}
+  m_Size: {x: 0.7645786, y: 6.8520174}
   m_Direction: 0
---- !u!50 &5621813577491444382
+--- !u!50 &4581153442968099901
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0

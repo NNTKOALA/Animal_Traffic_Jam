@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
 
     public List<LevelPoint> mainLevelPrefab;
     public int currentLevel;
+    public int selectedLevel;
     public int objectCount { get; private set; }
 
     public TextMeshProUGUI levelText;
@@ -79,16 +80,25 @@ public class GameManager : MonoBehaviour
     public void NextLevel()
     {
         Debug.Log("Next Level");
-        currentLevel = ++currentLevel % mainLevelPrefab.Count;
 
-        int maxLevel = PlayerPrefs.GetInt(PREF_MAX_LEVEL, 0);
-        if (currentLevel > maxLevel)
+        if (selectedLevel < currentLevel)
         {
-            PlayerPrefs.SetInt(PREF_MAX_LEVEL, currentLevel);
+            LoadLevel(selectedLevel + 1);
+            UpdateChoosenLevelText(selectedLevel + 1);
         }
-        LoadLevel(currentLevel);
-        SaveCurrentLevel();
-        UpdateLevelText();
+        else
+        {
+            currentLevel = ++currentLevel % mainLevelPrefab.Count;
+
+            int maxLevel = PlayerPrefs.GetInt(PREF_MAX_LEVEL, 0);
+            if (currentLevel > maxLevel)
+            {
+                PlayerPrefs.SetInt(PREF_MAX_LEVEL, currentLevel);
+            }
+            LoadLevel(currentLevel);
+            SaveCurrentLevel();
+            UpdateLevelText();
+        }
     }
 
     public void DelaySpawnNextLevel()
@@ -116,6 +126,7 @@ public class GameManager : MonoBehaviour
 
     public void SpawnLevelById(int id)
     {
+        selectedLevel = id;
         LoadLevel(id);
         UpdateChoosenLevelText(id);
     }
@@ -145,7 +156,6 @@ public class GameManager : MonoBehaviour
 
         currentLevelInstance = Instantiate(mainLevelPrefab[levelIndex]);
         objectCount = CountObjectsWithTag("Object");
-        //UIManager.Instance.SwitchToInGameUI();
     }
 
     public void DecreaseObjectCount()

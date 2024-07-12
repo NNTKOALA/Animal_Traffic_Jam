@@ -5,7 +5,6 @@ using UnityEngine;
 public class TouchController : MonoBehaviour
 {
     AnimController animController;
-    Rigidbody2D rb;
     public Transform defaultHeadPosition;
     public Transform headPosition;
     public Transform bodyPosition;
@@ -22,16 +21,13 @@ public class TouchController : MonoBehaviour
     float headValue = 0.4f;
     float bodyValue = 0.5f;
     float moveSpeed = 5f;
-    float rotationSpeed = 10f;
+    float rotationSpeed = 5f;
     float mapBoundaryY = 10f;
-
-    public float blockedRotationZ;
 
     private Color originalColor;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
         animController = GetComponent<AnimController>();
         charCollider = GetComponent<Collider2D>();
         if (partsToColor.Length > 0)
@@ -51,12 +47,6 @@ public class TouchController : MonoBehaviour
         {
             TouchController clickedController = clickedCharacter.GetComponent<TouchController>();
             clickedCharacter.tag = "Player";
-
-            if (currentActivePlayer == null && currentActivePlayer == clickedController)
-            {
-                currentActivePlayer.ChangeCharColor(Color.white);
-                currentActivePlayer.DropObject();
-            }
             currentActivePlayer = clickedController;
             currentActivePlayer.TouchObject();
         }
@@ -105,50 +95,16 @@ public class TouchController : MonoBehaviour
 
     public void DragObject()
     {
-        if (isColliding)
-        {
-            return;
-        }
-
-        Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
-        Vector3 direction = endpoint - bodyPosition.position;
-
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        float currentRotation = angle - 90;
-
-        Quaternion targetRotation = Quaternion.Euler(0, 0, currentRotation);
-
-        if (Mathf.Abs(bodyPosition.eulerAngles.y - 180) < 0.1f)
-        {
-            targetRotation = Quaternion.Euler(0, -180, currentRotation);
-        }
-
-        bodyPosition.rotation = Quaternion.Lerp(bodyPosition.rotation, targetRotation, rotationSpeed);
-
-        animController.ChangeAnim("move");
-        AudioManager.Instance.PlaySFX("Move");
-    }
-
-
-    /*    public void DragObject()
+        if (!isColliding)
         {
             Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
-            Vector3 direction = endpoint - bodyPosition.position;
-
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            float currentRotation = angle - 90;
-
-            *//*currentRotation = Mathf.Clamp(currentRotation, -180f, 180f);*//*
-
-            if (!isColliding *//*|| Mathf.Abs(currentRotation) < Mathf.Abs(blockedRotationZ)*//*)
-            {
-                Vector3 newRotation = new Vector3(0, 0, currentRotation);
-                bodyPosition.eulerAngles = Vector3.Lerp(bodyPosition.eulerAngles, newRotation, rotationSpeed);
-
-                animController.ChangeAnim("move");
-                AudioManager.Instance.PlaySFX("Move");
-            }
-        }*/
+            Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, endpoint - bodyPosition.position);
+            desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
+            bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
+            animController.ChangeAnim("move");
+            AudioManager.Instance.PlaySFX("Move");
+        }
+    }
 
     public void DropObject()
     {
@@ -280,8 +236,6 @@ public class TouchController : MonoBehaviour
             Tile tile = Cache.GetTile(collision);
             if (tile != null && tile.isOccupied)
             {
-                //blockedRotationZ = bodyPosition.transform.rotation.z;
-                Debug.Log("Block => " + blockedRotationZ);
                 ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
                 tile.ChangeToHitColor();
                 isColliding = true;
