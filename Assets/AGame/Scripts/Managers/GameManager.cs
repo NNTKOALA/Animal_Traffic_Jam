@@ -18,7 +18,6 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI levelText;
 
     private LevelPoint currentLevelInstance;
-    private bool isPlaying;
 
     private void Awake()
     {
@@ -35,7 +34,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         currentLevel = PlayerPrefs.GetInt("CurrentLevel", 0);
-        PauseGame();
     }
 
     private void OnApplicationQuit()
@@ -45,9 +43,7 @@ public class GameManager : MonoBehaviour
 
     public void StartNewGame()
     {
-        isPlaying = true;
         currentLevel = PlayerPrefs.GetInt("CurrentLevel", 0);
-        ResumeGame();
         LoadLevel(currentLevel);
     }
 
@@ -59,16 +55,6 @@ public class GameManager : MonoBehaviour
         }
         UIManager.Instance.SwitchToMainMenuUI();
         SaveCurrentLevel();
-    }
-
-    public void PauseGame()
-    {
-        isPlaying = false;
-    }
-
-    public void ResumeGame()
-    {
-        isPlaying = true;
     }
 
     int CountObjectsWithTag(string tag)
@@ -171,7 +157,6 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Win" + objectCount);
             UIManager.Instance.SwitchToWinUI();
-            PauseGame();
         }
     }
 

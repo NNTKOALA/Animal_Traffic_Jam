@@ -18,13 +18,14 @@ public class TouchController : MonoBehaviour
     Collider2D charCollider;
     Vector2 initialMousePos;
     Vector2 currentMousePos;
-    float headValue = 0.45f;
+    float headValue = 0.48f;
     float bodyValue = 0.5f;
     float moveSpeed = 5f;
-    float rotationSpeed = 10f;
+    float rotationSpeed = 15f;
     float mapBoundaryY = 10f;
 
     private Color originalColor;
+    private Quaternion originalRotation;
 
     private void Start()
     {
@@ -40,6 +41,7 @@ public class TouchController : MonoBehaviour
     {
         Debug.Log("OnMouseDown => " + gameObject.name);
         initialMousePos = Input.mousePosition;
+        isDragging = false;
         isColliding = false;
         GameObject clickedCharacter = this.gameObject;
 
@@ -61,6 +63,7 @@ public class TouchController : MonoBehaviour
 
             if (distance > 3f)
             {
+                isDragging = true;
                 DragObject();
             }
         }
@@ -71,6 +74,13 @@ public class TouchController : MonoBehaviour
         if (currentActivePlayer != null)
         {
             currentActivePlayer.DropObject();
+
+            if (!isDragging)
+            {
+                transform.rotation = originalRotation;
+                
+            }
+
             if (!isColliding)
             {
                 SetPostionToTile();
@@ -80,6 +90,7 @@ public class TouchController : MonoBehaviour
                 animController.ChangeAnim("idle");
                 currentActivePlayer.ResetPositionToSavedTile();
             }
+
             currentActivePlayer.gameObject.tag = "Object";
             currentActivePlayer = null;
             isColliding = false;
@@ -88,6 +99,7 @@ public class TouchController : MonoBehaviour
 
     public void TouchObject()
     {
+        originalRotation = transform.rotation;
         ChangeCharColor(new Color(1f, 0.91f, 0.73f));
         animController.ChangeAnim("idle");
         AudioManager.Instance.PlaySFX("Touch");
@@ -101,20 +113,11 @@ public class TouchController : MonoBehaviour
 
         if (!isColliding)
         {
-            if (Mathf.Abs(bodyPosition.eulerAngles.y - 180) < 0.1f)
-            {
-                desiredRotation = Quaternion.Euler(0, -180, desiredRotation.eulerAngles.z);
-                bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
-                animController.ChangeAnim("move");
-                AudioManager.Instance.PlaySFX("Move");
-            }
-            else
-            {
-                desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
-                bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
-                animController.ChangeAnim("move");
-                AudioManager.Instance.PlaySFX("Move");
-            }
+            desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
+
+            bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
+            animController.ChangeAnim("move");
+            AudioManager.Instance.PlaySFX("Move");
         }
     }
 
@@ -131,6 +134,7 @@ public class TouchController : MonoBehaviour
             headPosition = currentHeadTile.transform;
             Vector3 upVector = (currentHeadTile.transform.position - transform.position).normalized;
             transform.up = upVector;
+            EscapingMovement();
         }
     }
 
@@ -171,6 +175,8 @@ public class TouchController : MonoBehaviour
             Debug.Log("No object hit detected");
             isColliding = false;
             StartCoroutine(MoveCharacterOutsideMap());
+            animController.ChangeAnim("move");
+            AudioManager.Instance.PlaySFX("Move");
             Destroy(gameObject, 2f);
             GameManager.Instance.DecreaseObjectCount();
         }
@@ -214,8 +220,6 @@ public class TouchController : MonoBehaviour
         }
 
         Debug.Log("Character has moved outside the map.");
-        animController.ChangeAnim("move");
-        AudioManager.Instance.PlaySFX("Move");
     }
 
     private void ChangeCharColor(Collider2D collider)
