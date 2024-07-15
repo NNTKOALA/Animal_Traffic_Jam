@@ -73,24 +73,23 @@ public class TouchController : MonoBehaviour
     {
         if (currentActivePlayer != null)
         {
-            currentActivePlayer.DropObject();
-
-            if (!isDragging)
+            if (isDragging)
             {
-                transform.rotation = originalRotation;
-                
-            }
-
-            if (!isColliding)
-            {
-                SetPostionToTile();
+                currentActivePlayer.DropObject();
+                if (!isColliding)
+                {
+                    SetPostionToTile();
+                }
+                else
+                {
+                    animController.ChangeAnim("idle");
+                    currentActivePlayer.ResetPositionToSavedTile();
+                }
             }
             else
             {
-                animController.ChangeAnim("idle");
-                currentActivePlayer.ResetPositionToSavedTile();
+                transform.rotation = originalRotation;
             }
-
             currentActivePlayer.gameObject.tag = "Object";
             currentActivePlayer = null;
             isColliding = false;
@@ -134,6 +133,7 @@ public class TouchController : MonoBehaviour
             headPosition = currentHeadTile.transform;
             Vector3 upVector = (currentHeadTile.transform.position - transform.position).normalized;
             transform.up = upVector;
+            transform.rotation = originalRotation;
             EscapingMovement();
         }
     }
