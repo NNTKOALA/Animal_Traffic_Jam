@@ -757,6 +757,7 @@ MonoBehaviour:
   - {fileID: 78361521030498473, guid: 603a7de507957414db9ed22f4e1982ea, type: 3}
   - {fileID: 6762827035227650013, guid: b238cd59b51aba1479077cbd61112002, type: 3}
   currentLevel: 0
+  selectedLevel: 0
   levelText: {fileID: 290698896}
 --- !u!4 &144789588
 Transform:

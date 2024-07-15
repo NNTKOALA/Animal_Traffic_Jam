@@ -18,10 +18,10 @@ public class TouchController : MonoBehaviour
     Collider2D charCollider;
     Vector2 initialMousePos;
     Vector2 currentMousePos;
-    float headValue = 0.4f;
+    float headValue = 0.45f;
     float bodyValue = 0.5f;
     float moveSpeed = 5f;
-    float rotationSpeed = 5f;
+    float rotationSpeed = 10f;
     float mapBoundaryY = 10f;
 
     private Color originalColor;
@@ -95,14 +95,26 @@ public class TouchController : MonoBehaviour
 
     public void DragObject()
     {
+        Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
+        Vector3 direction = endpoint - bodyPosition.position;
+        Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, direction);
+
         if (!isColliding)
         {
-            Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
-            Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, endpoint - bodyPosition.position);
-            desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
-            bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
-            animController.ChangeAnim("move");
-            AudioManager.Instance.PlaySFX("Move");
+            if (Mathf.Abs(bodyPosition.eulerAngles.y - 180) < 0.1f)
+            {
+                desiredRotation = Quaternion.Euler(0, -180, desiredRotation.eulerAngles.z);
+                bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
+                animController.ChangeAnim("move");
+                AudioManager.Instance.PlaySFX("Move");
+            }
+            else
+            {
+                desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
+                bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
+                animController.ChangeAnim("move");
+                AudioManager.Instance.PlaySFX("Move");
+            }
         }
     }
 
@@ -236,6 +248,7 @@ public class TouchController : MonoBehaviour
             Tile tile = Cache.GetTile(collision);
             if (tile != null && tile.isOccupied)
             {
+
                 ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
                 tile.ChangeToHitColor();
                 isColliding = true;

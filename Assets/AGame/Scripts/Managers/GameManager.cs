@@ -83,10 +83,11 @@ public class GameManager : MonoBehaviour
 
         if (selectedLevel < currentLevel)
         {
-            LoadLevel(selectedLevel + 1);
-            UpdateChoosenLevelText(selectedLevel + 1);
+            selectedLevel++;
+            LoadLevel(selectedLevel);
+            UpdateChoosenLevelText(selectedLevel);
         }
-        else
+        else if (selectedLevel == currentLevel)
         {
             currentLevel = ++currentLevel % mainLevelPrefab.Count;
 
