@@ -22,7 +22,7 @@ public class LevelMenu : MonoBehaviour
             {
                 levelButtonList[i].CurrentLevelButton(SelectLevel, i);
             }
-            else if (i < maxLevel)
+            else if (i <= maxLevel)
             {
                 levelButtonList[i].OpenButton(SelectLevel, i);
             }

@@ -90,6 +90,13 @@ public class TouchController : MonoBehaviour
             {
                 transform.rotation = originalRotation;
             }
+
+            if (!isColliding)
+            {
+                EscapingMovement();
+            }
+
+            ChangeCharColor(Color.white);
             currentActivePlayer.gameObject.tag = "Object";
             currentActivePlayer = null;
             isColliding = false;
@@ -123,7 +130,6 @@ public class TouchController : MonoBehaviour
     public void DropObject()
     {
         isDragging = false;
-        ChangeCharColor(Color.white);
     }
 
     public void ResetPositionToSavedTile()
@@ -134,7 +140,6 @@ public class TouchController : MonoBehaviour
             Vector3 upVector = (currentHeadTile.transform.position - transform.position).normalized;
             transform.up = upVector;
             transform.rotation = originalRotation;
-            EscapingMovement();
         }
     }
 
