@@ -180,6 +180,8 @@ MonoBehaviour:
   - {fileID: 1174421717161686554}
   - {fileID: 5130379867454657440}
   - {fileID: 1948700390657486187}
+  - {fileID: 9169995580678578000}
+  - {fileID: 270002431892440783}
   isDragging: 0
   isColliding: 0
   currentBodyTile: {fileID: 0}
@@ -686,6 +688,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
+--- !u!212 &270002431892440783 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6118654696332040711, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
+  m_PrefabInstance: {fileID: 6293474605626907848}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &453670144066705451 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5844875550922802403, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
@@ -724,5 +731,10 @@ SpriteRenderer:
 --- !u!212 &7260708079519200300 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 3717121471350941924, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
+  m_PrefabInstance: {fileID: 6293474605626907848}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &9169995580678578000 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 2888135203525149592, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
   m_PrefabInstance: {fileID: 6293474605626907848}
   m_PrefabAsset: {fileID: 0}

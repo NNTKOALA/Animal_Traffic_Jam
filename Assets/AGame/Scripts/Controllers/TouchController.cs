@@ -37,24 +37,21 @@ public class TouchController : MonoBehaviour
         }
     }
 
-    void OnMouseDown()
+    private void OnMouseDown()
     {
-        Debug.Log("OnMouseDown => " + gameObject.name);
         initialMousePos = Input.mousePosition;
         isDragging = false;
         isColliding = false;
-        GameObject clickedCharacter = this.gameObject;
 
-        if (clickedCharacter != null && clickedCharacter.CompareTag("Object"))
+        if (gameObject.CompareTag("Object"))
         {
-            TouchController clickedController = clickedCharacter.GetComponent<TouchController>();
-            clickedCharacter.tag = "Player";
-            currentActivePlayer = clickedController;
-            currentActivePlayer.TouchObject();
+            gameObject.tag = "Player";
+            currentActivePlayer = this;
+            TouchObject();
         }
     }
 
-    void OnMouseDrag()
+    private void OnMouseDrag()
     {
         if (currentActivePlayer != null)
         {
@@ -69,13 +66,13 @@ public class TouchController : MonoBehaviour
         }
     }
 
-    void OnMouseUp()
+    private void OnMouseUp()
     {
         if (currentActivePlayer != null)
         {
             if (isDragging)
             {
-                currentActivePlayer.DropObject();
+                DropObject();
                 if (!isColliding)
                 {
                     SetPostionToTile();
@@ -83,7 +80,7 @@ public class TouchController : MonoBehaviour
                 else
                 {
                     animController.ChangeAnim("idle");
-                    currentActivePlayer.ResetPositionToSavedTile();
+                    ResetPositionToSavedTile();
                 }
             }
             else

@@ -180,6 +180,8 @@ MonoBehaviour:
   - {fileID: 2989202091150714395}
   - {fileID: 9080770240861356961}
   - {fileID: 2466997932591971690}
+  - {fileID: 5077240441271095121}
+  - {fileID: 4217789184883644110}
   isDragging: 0
   isColliding: 0
   currentBodyTile: {fileID: 0}
@@ -706,9 +708,19 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 5123561025747577554, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
   m_PrefabInstance: {fileID: 7953722999991749833}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &4217789184883644110 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6118654696332040711, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
+  m_PrefabInstance: {fileID: 7953722999991749833}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4574645348877879338 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5844875550922802403, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
+  m_PrefabInstance: {fileID: 7953722999991749833}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &5077240441271095121 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 2888135203525149592, guid: dd4b362541ab0bf4e992e14e61f56a9f, type: 3}
   m_PrefabInstance: {fileID: 7953722999991749833}
   m_PrefabAsset: {fileID: 0}
 --- !u!212 &6770197378260886573 stripped
