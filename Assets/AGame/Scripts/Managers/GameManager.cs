@@ -67,13 +67,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Next Level");
 
-        if (selectedLevel < currentLevel)
-        {
-            selectedLevel++;
-            LoadLevel(selectedLevel);
-            UpdateChoosenLevelText(selectedLevel);
-        }
-        else if (selectedLevel == currentLevel)
+        if (selectedLevel == currentLevel)
         {
             currentLevel = ++currentLevel % mainLevelPrefab.Count;
 
@@ -85,6 +79,13 @@ public class GameManager : MonoBehaviour
             LoadLevel(currentLevel);
             SaveCurrentLevel();
             UpdateLevelText();
+        }
+
+        if (selectedLevel < currentLevel)
+        {
+            selectedLevel++;
+            LoadLevel(selectedLevel);
+            UpdateChoosenLevelText(selectedLevel);
         }
     }
 
@@ -143,11 +144,13 @@ public class GameManager : MonoBehaviour
 
         currentLevelInstance = Instantiate(mainLevelPrefab[levelIndex]);
         objectCount = CountObjectsWithTag("Object");
+        Debug.LogWarning("Object in level => " + objectCount);
     }
 
     public void DecreaseObjectCount()
     {
         objectCount--;
+        Debug.LogWarning("Current Object in level => " + objectCount);
         CheckWinCondition();
     }
 

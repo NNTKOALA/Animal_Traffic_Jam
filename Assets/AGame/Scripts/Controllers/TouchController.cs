@@ -25,7 +25,6 @@ public class TouchController : MonoBehaviour
     float mapBoundaryY = 10f;
 
     private Color originalColor;
-    private Quaternion originalRotation;
 
     private void Start()
     {
@@ -70,31 +69,19 @@ public class TouchController : MonoBehaviour
     {
         if (currentActivePlayer != null)
         {
-            if (isDragging)
+            DropObject();
+            if (!isColliding)
             {
-                DropObject();
-                if (!isColliding)
-                {
-                    SetPostionToTile();
-                }
-                else
-                {
-                    animController.ChangeAnim("idle");
-                    ResetPositionToSavedTile();
-                }
+                SetPositionToTile();
             }
             else
             {
-                transform.rotation = originalRotation;
-            }
-
-            if (!isColliding)
-            {
-                EscapingMovement();
+                animController.ChangeAnim("idle");
+                ResetPositionToSavedTile();
             }
 
             ChangeCharColor(Color.white);
-            currentActivePlayer.gameObject.tag = "Object";
+            gameObject.tag = "Object";
             currentActivePlayer = null;
             isColliding = false;
         }
@@ -102,7 +89,6 @@ public class TouchController : MonoBehaviour
 
     public void TouchObject()
     {
-        originalRotation = transform.rotation;
         ChangeCharColor(new Color(1f, 0.91f, 0.73f));
         animController.ChangeAnim("idle");
         AudioManager.Instance.PlaySFX("Touch");
@@ -112,17 +98,18 @@ public class TouchController : MonoBehaviour
     {
         Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
         Vector3 direction = endpoint - bodyPosition.position;
-        Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, direction);
 
         if (!isColliding)
         {
+            Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, direction);
             desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
-
             bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
+
             animController.ChangeAnim("move");
             AudioManager.Instance.PlaySFX("Move");
         }
     }
+
 
     public void DropObject()
     {
@@ -134,19 +121,26 @@ public class TouchController : MonoBehaviour
         if (currentHeadTile != null)
         {
             headPosition = currentHeadTile.transform;
-            Vector3 upVector = (currentHeadTile.transform.position - transform.position).normalized;
-            transform.up = upVector;
-            transform.rotation = originalRotation;
+            Vector3 direction = (currentHeadTile.transform.position - transform.position).normalized;
+            if (direction != Vector3.zero)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(Vector3.forward, direction);
+                transform.rotation = lookRotation;
+            }
         }
     }
 
-    public void SetPostionToTile()
+    public void SetPositionToTile()
     {
         if (currentHeadTile != null)
         {
             headPosition = currentHeadTile.transform;
-            Vector3 upVector = (currentHeadTile.transform.position - transform.position).normalized;
-            transform.up = upVector;
+            Vector3 direction = (currentHeadTile.transform.position - transform.position).normalized;
+            if (direction != Vector3.zero)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(Vector3.forward, direction);
+                transform.rotation = lookRotation;
+            }
             EscapingMovement();
         }
     }
@@ -254,7 +248,6 @@ public class TouchController : MonoBehaviour
             Tile tile = Cache.GetTile(collision);
             if (tile != null && tile.isOccupied)
             {
-
                 ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
                 tile.ChangeToHitColor();
                 isColliding = true;
