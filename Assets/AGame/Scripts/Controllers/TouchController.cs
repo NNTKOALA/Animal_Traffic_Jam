@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class TouchController : MonoBehaviour
@@ -10,6 +11,7 @@ public class TouchController : MonoBehaviour
     public Transform bodyPosition;
     public SpriteRenderer[] partsToColor;
     public static TouchController currentActivePlayer = null;
+
     public bool isDragging = false;
     public bool isColliding = false;
     public Tile currentBodyTile = null;
@@ -21,8 +23,12 @@ public class TouchController : MonoBehaviour
     float headValue = 0.48f;
     float bodyValue = 0.5f;
     float moveSpeed = 5f;
-    float rotationSpeed = 15f;
+    float rotationSpeed = 30f;
     float mapBoundaryY = 10f;
+    float blockedRotationZ;
+    bool blockedForward = false;
+    bool canForceUpdateRotation = false;
+    bool isDraggingForward = false;
 
     private Color originalColor;
 
@@ -99,17 +105,28 @@ public class TouchController : MonoBehaviour
         Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
         Vector3 direction = endpoint - bodyPosition.position;
 
-        if (!isColliding)
+        Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, direction);
+        desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
+        isDraggingForward = (desiredRotation.eulerAngles.z - bodyPosition.eulerAngles.z) < 0;
+        
+        if (blockedForward)
         {
-            Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, direction);
-            desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
+            //va cham theo chieu kim dong ho
+            canForceUpdateRotation = (desiredRotation.eulerAngles.z - blockedRotationZ) > 0;
+        }
+        else
+        {
+            // va cham nguoc chieu kim dong ho
+            canForceUpdateRotation = (desiredRotation.eulerAngles.z - blockedRotationZ) < 0;
+        }
+       
+        if (!isColliding || canForceUpdateRotation)
+        {
             bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
-
             animController.ChangeAnim("move");
             AudioManager.Instance.PlaySFX("Move");
         }
     }
-
 
     public void DropObject()
     {
@@ -202,8 +219,6 @@ public class TouchController : MonoBehaviour
 
     private IEnumerator MoveCharacterOutsideMap()
     {
-        Debug.Log("Starting movement outside map.");
-
         if (charCollider != null)
         {
             charCollider.enabled = false;
@@ -248,6 +263,10 @@ public class TouchController : MonoBehaviour
             Tile tile = Cache.GetTile(collision);
             if (tile != null && tile.isOccupied)
             {
+                blockedRotationZ = bodyPosition.eulerAngles.z;
+                blockedForward = isDraggingForward;
+
+                Debug.Log($"Blocked Rotation Z: {blockedRotationZ}");
                 ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
                 tile.ChangeToHitColor();
                 isColliding = true;
