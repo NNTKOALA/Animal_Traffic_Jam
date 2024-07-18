@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class TouchController : MonoBehaviour
@@ -18,13 +17,13 @@ public class TouchController : MonoBehaviour
     public Tile currentHeadTile = null;
 
     Collider2D charCollider;
-    Vector2 initialMousePos;
-    Vector2 currentMousePos;
-    float headValue = 0.48f;
+    Vector3 initialMousePos;
+    Vector3 currentMousePos;
+    float headValue = 0.5f;
     float bodyValue = 0.5f;
     float moveSpeed = 5f;
-    float rotationSpeed = 30f;
     float mapBoundaryY = 10f;
+    float maxRotationAngle = 12f;
     float blockedRotationZ;
     bool blockedForward = false;
     bool canForceUpdateRotation = false;
@@ -107,22 +106,36 @@ public class TouchController : MonoBehaviour
 
         Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, direction);
         desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
-        isDraggingForward = (desiredRotation.eulerAngles.z - bodyPosition.eulerAngles.z) < 0;
-        
+        Debug.LogWarning("Rotation => " + desiredRotation.eulerAngles.z);
+        float angleDifference = desiredRotation.eulerAngles.z - bodyPosition.eulerAngles.z;
+
+        if (angleDifference > 180)
+        {
+            angleDifference -= 360;
+        }
+        else if (angleDifference < -180)
+        {
+            angleDifference += 360;
+        }
+
+        isDraggingForward = angleDifference < 0;
+
         if (blockedForward)
         {
-            //va cham theo chieu kim dong ho
-            canForceUpdateRotation = (desiredRotation.eulerAngles.z - blockedRotationZ) > 0;
+            canForceUpdateRotation = angleDifference > 0;
         }
         else
         {
-            // va cham nguoc chieu kim dong ho
-            canForceUpdateRotation = (desiredRotation.eulerAngles.z - blockedRotationZ) < 0;
+            canForceUpdateRotation = angleDifference < 0;
         }
-       
+
         if (!isColliding || canForceUpdateRotation)
         {
-            bodyPosition.rotation = Quaternion.RotateTowards(bodyPosition.rotation, desiredRotation, rotationSpeed);
+            float clampedAngle = Mathf.Clamp(angleDifference, -maxRotationAngle, maxRotationAngle);
+            Quaternion limitedRotation = Quaternion.Euler(0, 0, bodyPosition.eulerAngles.z + clampedAngle);
+
+            bodyPosition.rotation = limitedRotation;
+
             animController.ChangeAnim("move");
             AudioManager.Instance.PlaySFX("Move");
         }
