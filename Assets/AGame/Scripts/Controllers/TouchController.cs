@@ -19,11 +19,13 @@ public class TouchController : MonoBehaviour
     Collider2D charCollider;
     Vector3 initialMousePos;
     Vector3 currentMousePos;
+    Vector3 startDirection = Vector3.zero;
+    Vector3 endDirection = Vector3.zero;
     float headValue = 0.5f;
     float bodyValue = 0.5f;
     float moveSpeed = 5f;
     float mapBoundaryY = 10f;
-    float maxRotationAngle = 12f;
+    float maxRotationAngle = 15f;
     float blockedRotationZ;
     bool blockedForward = false;
     bool canForceUpdateRotation = false;
@@ -92,8 +94,55 @@ public class TouchController : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Tile"))
+        {
+            Tile tile = Cache.GetTile(collision);
+            if (tile != null && tile.isOccupied)
+            {
+                blockedRotationZ = bodyPosition.eulerAngles.z;
+                blockedForward = isDraggingForward;
+
+                Debug.Log($"Blocked Rotation Z: {blockedRotationZ}");
+                ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
+                tile.ChangeToHitColor();
+                isColliding = true;
+            }
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Tile"))
+        {
+            Tile tile = Cache.GetTile(collision);
+            if (tile != null && tile.isOccupied)
+            {
+                if (Vector3.Distance(bodyPosition.position, tile.transform.position) < bodyValue)
+                {
+                    currentBodyTile = tile;
+                }
+                if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue && !isColliding)
+                {
+                    currentHeadTile = tile;
+                }
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Tile"))
+        {
+            ChangeCharColor(originalColor);
+            isColliding = false;
+        }
+    }
+
     public void TouchObject()
     {
+        startDirection = Camera.main.ScreenToWorldPoint(initialMousePos) - bodyPosition.position;
         ChangeCharColor(new Color(1f, 0.91f, 0.73f));
         animController.ChangeAnim("idle");
         AudioManager.Instance.PlaySFX("Touch");
@@ -101,43 +150,30 @@ public class TouchController : MonoBehaviour
 
     public void DragObject()
     {
-        Vector3 endpoint = Camera.main.ScreenToWorldPoint(currentMousePos);
-        Vector3 direction = endpoint - bodyPosition.position;
+        endDirection = (Vector2)(Camera.main.ScreenToWorldPoint(currentMousePos) - bodyPosition.position);
 
-        Quaternion desiredRotation = Quaternion.LookRotation(Vector3.forward, direction);
-        desiredRotation = Quaternion.Euler(0, 0, desiredRotation.eulerAngles.z);
-        Debug.LogWarning("Rotation => " + desiredRotation.eulerAngles.z);
-        float angleDifference = desiredRotation.eulerAngles.z - bodyPosition.eulerAngles.z;
+        float angle = Vector2.SignedAngle(startDirection, endDirection);
+        Debug.LogWarning("Angle => " + angle);
 
-        if (angleDifference > 180)
-        {
-            angleDifference -= 360;
-        }
-        else if (angleDifference < -180)
-        {
-            angleDifference += 360;
-        }
-
-        isDraggingForward = angleDifference < 0;
+        isDraggingForward = angle < 0;
 
         if (blockedForward)
         {
-            canForceUpdateRotation = angleDifference > 0;
+            canForceUpdateRotation = angle > 0;
         }
         else
         {
-            canForceUpdateRotation = angleDifference < 0;
+            canForceUpdateRotation = angle < 0;
         }
 
         if (!isColliding || canForceUpdateRotation)
         {
-            float clampedAngle = Mathf.Clamp(angleDifference, -maxRotationAngle, maxRotationAngle);
+            float clampedAngle = Mathf.Clamp(angle, -maxRotationAngle, maxRotationAngle);
             Quaternion limitedRotation = Quaternion.Euler(0, 0, bodyPosition.eulerAngles.z + clampedAngle);
-
             bodyPosition.rotation = limitedRotation;
-
             animController.ChangeAnim("move");
             AudioManager.Instance.PlaySFX("Move");
+            startDirection = endDirection;
         }
     }
 
@@ -266,52 +302,6 @@ public class TouchController : MonoBehaviour
         foreach (SpriteRenderer part in partsToColor)
         {
             part.color = newColor;
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Tile"))
-        {
-            Tile tile = Cache.GetTile(collision);
-            if (tile != null && tile.isOccupied)
-            {
-                blockedRotationZ = bodyPosition.eulerAngles.z;
-                blockedForward = isDraggingForward;
-
-                Debug.Log($"Blocked Rotation Z: {blockedRotationZ}");
-                ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
-                tile.ChangeToHitColor();
-                isColliding = true;
-            }
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Tile"))
-        {
-            Tile tile = Cache.GetTile(collision);
-            if (tile != null && tile.isOccupied)
-            {
-                if (Vector3.Distance(bodyPosition.position, tile.transform.position) < bodyValue)
-                {
-                    currentBodyTile = tile;
-                }
-                if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue && !isColliding)
-                {
-                    currentHeadTile = tile;
-                }
-            }
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Tile"))
-        {
-            ChangeCharColor(originalColor);
-            isColliding = false;
         }
     }
 }
