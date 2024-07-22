@@ -30,6 +30,7 @@ public class TouchController : MonoBehaviour
     bool blockedForward = false;
     bool canForceUpdateRotation = false;
     bool isDraggingForward = false;
+    bool isCollidingWithOccupiedTile = false;
 
     private Color originalColor;
 
@@ -108,13 +109,14 @@ public class TouchController : MonoBehaviour
                 ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
                 tile.ChangeToHitColor();
                 isColliding = true;
+                isCollidingWithOccupiedTile = true;
             }
         }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("Tile"))
+        if (collision.CompareTag("Tile") && !isCollidingWithOccupiedTile)
         {
             Tile tile = Cache.GetTile(collision);
             if (tile != null && tile.isOccupied)
@@ -123,7 +125,8 @@ public class TouchController : MonoBehaviour
                 {
                     currentBodyTile = tile;
                 }
-                if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue && !isColliding)
+
+                if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue)
                 {
                     currentHeadTile = tile;
                 }
@@ -137,6 +140,7 @@ public class TouchController : MonoBehaviour
         {
             ChangeCharColor(originalColor);
             isColliding = false;
+            isCollidingWithOccupiedTile = false;
         }
     }
 

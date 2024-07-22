@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
 
     public List<LevelPoint> mainLevelPrefab;
     public int currentLevel;
-    public int selectedLevel;
     public int objectCount { get; private set; }
 
     public TextMeshProUGUI levelText;
@@ -41,12 +40,6 @@ public class GameManager : MonoBehaviour
         SaveCurrentLevel();
     }
 
-    public void StartNewGame()
-    {
-        currentLevel = PlayerPrefs.GetInt("CurrentLevel", 0);
-        LoadLevel(currentLevel);
-    }
-
     public void OnNewGame()
     {
         if (currentLevelInstance != null)
@@ -67,26 +60,16 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Next Level");
 
-        if (selectedLevel == currentLevel)
-        {
-            currentLevel = ++currentLevel % mainLevelPrefab.Count;
+        currentLevel = ++currentLevel % mainLevelPrefab.Count;
 
-            int maxLevel = PlayerPrefs.GetInt(PREF_MAX_LEVEL, 0);
-            if (currentLevel > maxLevel)
-            {
-                PlayerPrefs.SetInt(PREF_MAX_LEVEL, currentLevel);
-            }
-            LoadLevel(currentLevel);
-            SaveCurrentLevel();
-            UpdateLevelText();
-        }
-
-        if (selectedLevel < currentLevel)
+        int maxLevel = PlayerPrefs.GetInt(PREF_MAX_LEVEL, 0);
+        if (currentLevel > maxLevel)
         {
-            selectedLevel++;
-            LoadLevel(selectedLevel);
-            UpdateChoosenLevelText(selectedLevel);
+            PlayerPrefs.SetInt(PREF_MAX_LEVEL, currentLevel);
         }
+        LoadLevel(currentLevel);
+        SaveCurrentLevel();
+        UpdateLevelText();
     }
 
     public void DelaySpawnNextLevel()
@@ -105,26 +88,20 @@ public class GameManager : MonoBehaviour
         NextLevel();
     }
 
-    public void SpawnCurrentLevel(int currentLevel)
+    public void SpawnLevelById(int id)
     {
-        LoadLevel(currentLevel);
+        currentLevel = id;
+        LoadLevel(id);
         SaveCurrentLevel();
         UpdateLevelText();
     }
 
-    public void SpawnLevelById(int id)
+    public void DelaySpawnLevel(int id)
     {
-        selectedLevel = id;
-        LoadLevel(id);
-        UpdateChoosenLevelText(id);
+        StartCoroutine(DelayLevel(id));
     }
 
-    public void DelaySpawnChoosenLevel(int id)
-    {
-        StartCoroutine(DelayChooseLevel(id));
-    }
-
-    IEnumerator DelayChooseLevel(int id)
+    IEnumerator DelayLevel(int id)
     {
         yield return new WaitForSeconds(1.5f);
         if (currentLevelInstance != null)
@@ -184,17 +161,5 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("CurrentLevel", currentLevel);
         PlayerPrefs.Save();
-    }
-
-    public void UpdateChoosenLevelText(int selectedLevel)
-    {
-        if (levelText != null)
-        {
-            levelText.text = $"Level {selectedLevel + 1}";
-        }
-        else
-        {
-            Debug.LogError("Level text is not assigned.");
-        }
     }
 }

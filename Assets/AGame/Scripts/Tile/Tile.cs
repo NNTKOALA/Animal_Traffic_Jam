@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.UI.Image;
+
 
 public class Tile : MonoBehaviour
 {
@@ -28,7 +26,7 @@ public class Tile : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.CompareTag("Object"))
         {
-            
+
             if (!isOccupied)
             {
                 //Debug.Log($"<color=yellow>Character trigger : {collision.name}</color>");
