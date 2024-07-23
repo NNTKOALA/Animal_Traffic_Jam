@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class TouchController : MonoBehaviour
 {
@@ -25,8 +27,7 @@ public class TouchController : MonoBehaviour
     float bodyValue = 0.5f;
     float moveSpeed = 5f;
     float mapBoundaryY = 10f;
-    float maxRotationAngle = 15f;
-    float blockedRotationZ;
+    float maxRotationAngle = 10f;
     bool blockedForward = false;
     bool canForceUpdateRotation = false;
     bool isDraggingForward = false;
@@ -102,10 +103,8 @@ public class TouchController : MonoBehaviour
             Tile tile = Cache.GetTile(collision);
             if (tile != null && tile.isOccupied)
             {
-                blockedRotationZ = bodyPosition.eulerAngles.z;
                 blockedForward = isDraggingForward;
-
-                Debug.Log($"Blocked Rotation Z: {blockedRotationZ}");
+                Debug.Log($"Blocked Forward: {blockedForward}");
                 ChangeCharColor(new Color(243f / 255f, 128f / 255f, 128f / 255f));
                 tile.ChangeToHitColor();
                 isColliding = true;
@@ -116,7 +115,7 @@ public class TouchController : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("Tile") && !isCollidingWithOccupiedTile)
+        if (collision.CompareTag("Tile") && !isCollidingWithOccupiedTile && !isColliding)
         {
             Tile tile = Cache.GetTile(collision);
             if (tile != null && tile.isOccupied)
@@ -126,7 +125,7 @@ public class TouchController : MonoBehaviour
                     currentBodyTile = tile;
                 }
 
-                if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) < headValue)
+                if (Vector3.Distance(defaultHeadPosition.transform.position, tile.transform.position) * 1.764 < headValue)
                 {
                     currentHeadTile = tile;
                 }
@@ -146,7 +145,7 @@ public class TouchController : MonoBehaviour
 
     public void TouchObject()
     {
-        startDirection = Camera.main.ScreenToWorldPoint(initialMousePos) - bodyPosition.position;
+        startDirection = (Vector2)(Camera.main.ScreenToWorldPoint(initialMousePos) - bodyPosition.position);
         ChangeCharColor(new Color(1f, 0.91f, 0.73f));
         animController.ChangeAnim("idle");
         AudioManager.Instance.PlaySFX("Touch");
@@ -191,7 +190,7 @@ public class TouchController : MonoBehaviour
         if (currentHeadTile != null)
         {
             headPosition = currentHeadTile.transform;
-            Vector3 direction = (currentHeadTile.transform.position - transform.position).normalized;
+            Vector3 direction = (currentHeadTile.transform.position - currentBodyTile.transform.position);
             if (direction != Vector3.zero)
             {
                 Quaternion lookRotation = Quaternion.LookRotation(Vector3.forward, direction);
@@ -205,7 +204,7 @@ public class TouchController : MonoBehaviour
         if (currentHeadTile != null)
         {
             headPosition = currentHeadTile.transform;
-            Vector3 direction = (currentHeadTile.transform.position - transform.position).normalized;
+            Vector3 direction = (currentHeadTile.transform.position - currentBodyTile.transform.position);
             if (direction != Vector3.zero)
             {
                 Quaternion lookRotation = Quaternion.LookRotation(Vector3.forward, direction);
@@ -250,24 +249,9 @@ public class TouchController : MonoBehaviour
 
     private IEnumerator ChangeColorForSeconds(Collider2D collider, float duration)
     {
-        ChangeCharColor(collider);
+        ChangeCharColor(collider, new Color(243f / 255f, 128f / 255f, 128f / 255f));
         yield return new WaitForSeconds(duration);
-        ResetColor(collider);
-    }
-
-    private void ResetColor(Collider2D collider)
-    {
-        if (collider != null)
-        {
-            SpriteRenderer[] spriteRenderers = collider.GetComponentsInChildren<SpriteRenderer>();
-            if (spriteRenderers != null)
-            {
-                foreach (SpriteRenderer spriteRenderer in spriteRenderers)
-                {
-                    spriteRenderer.color = originalColor;
-                }
-            }
-        }
+        ChangeCharColor(collider, originalColor);
     }
 
     private IEnumerator MoveCharacterOutsideMap()
@@ -286,7 +270,15 @@ public class TouchController : MonoBehaviour
         Debug.Log("Character has moved outside the map.");
     }
 
-    private void ChangeCharColor(Collider2D collider)
+    public void ChangeCharColor(Color newColor)
+    {
+        foreach (SpriteRenderer part in partsToColor)
+        {
+            part.color = newColor;
+        }
+    }
+
+    private void ChangeCharColor(Collider2D collider, Color newColor)
     {
         if (collider != null)
         {
@@ -295,17 +287,9 @@ public class TouchController : MonoBehaviour
             {
                 foreach (SpriteRenderer spriteRenderer in spriteRenderers)
                 {
-                    spriteRenderer.color = new Color(243f / 255f, 128f / 255f, 128f / 255f);
+                    spriteRenderer.color = newColor;
                 }
             }
-        }
-    }
-
-    public void ChangeCharColor(Color newColor)
-    {
-        foreach (SpriteRenderer part in partsToColor)
-        {
-            part.color = newColor;
         }
     }
 }

@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
 
     private void CheckWinCondition()
     {
-        if (objectCount <= 0)
+        if (objectCount == 0)
         {
             Debug.Log("Win" + objectCount);
             UIManager.Instance.SwitchToWinUI();
