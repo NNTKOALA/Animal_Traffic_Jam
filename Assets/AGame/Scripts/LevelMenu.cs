@@ -14,7 +14,7 @@ public class LevelMenu : MonoBehaviour
     {
         FrameEfx();
 
-        int maxLevel = GameManager.Instance.currentLevel;
+        int maxLevel = GameManager.Instance.highestUnlockedLevel;
 
         for (int i = 0; i < levelButtonList.Count; i++)
         {

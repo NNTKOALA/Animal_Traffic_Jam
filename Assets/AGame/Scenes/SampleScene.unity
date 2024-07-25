@@ -757,7 +757,7 @@ MonoBehaviour:
   - {fileID: 78361521030498473, guid: 603a7de507957414db9ed22f4e1982ea, type: 3}
   - {fileID: 6762827035227650013, guid: b238cd59b51aba1479077cbd61112002, type: 3}
   currentLevel: 0
-  selectedLevel: 0
+  highestUnlockedLevel: 0
   levelText: {fileID: 290698896}
 --- !u!4 &144789588
 Transform:
@@ -12758,6 +12758,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 767827526, guid: 58809de1f026d6f4087ad3fc08c2f376, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2890747054364156420, guid: 58809de1f026d6f4087ad3fc08c2f376, type: 3}
       propertyPath: m_RootOrder
       value: 0

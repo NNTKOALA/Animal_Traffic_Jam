@@ -72,7 +72,7 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         mainMenuUI.gameObject.SetActive(false);
         inGameUI.SetActive(true);
-        GameManager.Instance.SpawnLevelById(GameManager.Instance.currentLevel);
+        GameManager.Instance.SpawnLevelById(GameManager.Instance.highestUnlockedLevel);
     }
 
     public void DeactiveAll()

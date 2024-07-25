@@ -7,15 +7,12 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public const string PREF_MAX_LEVEL = "max_level";
-
     public static GameManager Instance { get; private set; }
-
     public List<LevelPoint> mainLevelPrefab;
     public int currentLevel;
+    public int highestUnlockedLevel;
     public int objectCount { get; private set; }
-
     public TextMeshProUGUI levelText;
-
     private LevelPoint currentLevelInstance;
 
     private void Awake()
@@ -33,6 +30,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         currentLevel = PlayerPrefs.GetInt("CurrentLevel", 0);
+        highestUnlockedLevel = PlayerPrefs.GetInt(PREF_MAX_LEVEL, 0);
     }
 
     private void OnApplicationQuit()
@@ -59,14 +57,8 @@ public class GameManager : MonoBehaviour
     public void NextLevel()
     {
         Debug.Log("Next Level");
-
-        currentLevel = ++currentLevel % mainLevelPrefab.Count;
-
-        int maxLevel = PlayerPrefs.GetInt(PREF_MAX_LEVEL, 0);
-        if (currentLevel > maxLevel)
-        {
-            PlayerPrefs.SetInt(PREF_MAX_LEVEL, currentLevel);
-        }
+        currentLevel = (currentLevel + 1) % mainLevelPrefab.Count;
+        UpdateUnlockedLevels();
         LoadLevel(currentLevel);
         SaveCurrentLevel();
         UpdateLevelText();
@@ -90,10 +82,17 @@ public class GameManager : MonoBehaviour
 
     public void SpawnLevelById(int id)
     {
-        currentLevel = id;
-        LoadLevel(id);
-        SaveCurrentLevel();
-        UpdateLevelText();
+        if (id <= highestUnlockedLevel)
+        {
+            currentLevel = id;
+            LoadLevel(id);
+            SaveCurrentLevel();
+            UpdateLevelText();
+        }
+        else
+        {
+            Debug.LogWarning("Attempted to spawn a locked level!");
+        }
     }
 
     public void DelaySpawnLevel(int id)
@@ -118,7 +117,6 @@ public class GameManager : MonoBehaviour
         {
             Destroy(currentLevelInstance.gameObject);
         }
-
         currentLevelInstance = Instantiate(mainLevelPrefab[levelIndex]);
         objectCount = CountObjectsWithTag("Object");
         Debug.LogWarning("Object in level => " + objectCount);
@@ -161,5 +159,20 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("CurrentLevel", currentLevel);
         PlayerPrefs.Save();
+    }
+
+    private void UpdateUnlockedLevels()
+    {
+        if (currentLevel > highestUnlockedLevel)
+        {
+            highestUnlockedLevel = currentLevel;
+            PlayerPrefs.SetInt(PREF_MAX_LEVEL, highestUnlockedLevel);
+            PlayerPrefs.Save();
+        }
+    }
+
+    public bool IsLevelUnlocked(int levelId)
+    {
+        return levelId <= highestUnlockedLevel;
     }
 }
